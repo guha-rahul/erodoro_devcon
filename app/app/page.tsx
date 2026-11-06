@@ -1,0 +1,755 @@
+import Link from "next/link";
+import { Nav } from "@/components/nav";
+import { HeroArt } from "@/components/hero-art";
+import { PayoffCalculator } from "@/components/payoff-calculator";
+import { Reveal } from "@/components/reveal";
+import { Showcase } from "@/components/showcase";
+import { Ticker } from "@/components/ticker";
+import { DEPLOYMENT, IS_TESTNET, explorer } from "@/lib/deployment";
+import { LandingStrategies } from "@/components/landing-strategies";
+import { WaitlistButton } from "@/components/waitlist-button";
+import { RIPS_ONLY_APP } from "@/lib/rips/ui";
+import { RipsHero } from "@/components/rips/rips-hero";
+import { RipsProvider } from "@/components/rips/rips-shell";
+
+export default function Landing() {
+  if (RIPS_ONLY_APP) return <RipsLanding />;
+  return (
+    <>
+      <Nav />
+      <main className="editorial relative flex-1">
+        <Statement />
+        <HeroBand />
+        <LandingStrategies />
+        <ProtocolStrip />
+        <TheSplit />
+        <Payoff />
+        <BuyingN />
+        <Showcase />
+        <Risk />
+        <Faq />
+      </main>
+      <Footer />
+      <ClosingBand />
+    </>
+  );
+}
+
+/**
+ * The Rips-only landing: one screen with the promise and a pack to rip. The full protocol page below stays for RIPS_ONLY_APP=false.
+ */
+function RipsLanding() {
+  return (
+    <>
+      <Nav />
+      <main className="editorial relative flex-1">
+        <RipsProvider>
+          <RipsHero fallback={<RipTeaser />} />
+        </RipsProvider>
+      </main>
+      <footer className="border-line border-t">
+        <div className="text-dim mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-6 text-sm">
+          <span className="display-3 text-text tracking-[0.06em] uppercase">erodoro</span>
+          <nav aria-label="Footer" className="flex gap-6">
+            {[["Deposit stock", "/rips/sell"], ["Buy Rips", "/market-rip"], ["My Rips", "/rips"]].map(([label, href]) => (
+              <Link key={href} href={href} className="text-muted hover:text-accent-ink label-mono underline decoration-1 underline-offset-4">{label}</Link>
+            ))}
+            {DEPLOYMENT.contracts.ripPool && (
+              <a href={explorer(DEPLOYMENT.contracts.ripPool)} target="_blank" rel="noreferrer" className="text-muted hover:text-accent-ink label-mono underline decoration-1 underline-offset-4">
+                Pool contract ↗
+              </a>
+            )}
+          </nav>
+        </div>
+      </footer>
+    </>
+  );
+}
+
+/**
+ * The band above everything.
+ *
+ * Two ticker strips bounding a full-bleed still. What sits in the strips is
+ * the deployment rather than a price, because there is no token and a number
+ * nobody can check is worth less than no number at all.
+ *
+ * The caption sits in a solid block rather than floating over the photograph.
+ * Partly because the art is authored greyscale and tinted per theme, so there
+ * is no one text colour that reads against it in both -- and partly because
+ * contrast over an image cannot be measured, by us or by anyone else.
+ */
+function HeroBand() {
+  return (
+    <section id="product" className="scroll-mt-20">
+      <Ticker />
+      <div className="bg-panel relative h-[46vh] max-h-[32rem] min-h-[19rem] overflow-hidden">
+        <div className="absolute inset-0">
+          <HeroArt />
+        </div>
+        {/* The wordmark set into the photograph rather than on top of it.
+            `difference` lets it take the engraving's own tone instead of
+            sitting over it as a sticker, and needs no second colour for the
+            dark theme. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 flex items-center justify-center mix-blend-difference"
+        >
+          <span className="hero-wordmark">erodoro</span>
+        </div>
+        <div className="ink-band absolute bottom-0 left-0 max-w-[38rem] px-6 py-5 sm:px-10 sm:py-7">
+          <p className="display-3">
+            {IS_TESTNET ? "This is a testnet preview." : "Read the risks before trading."}
+          </p>
+          <p className="text-muted prose-editorial mt-2.5 text-[0.9375rem]">
+            {IS_TESTNET
+              ? "Unaudited, with test assets that carry no value. Every address in the strips above is deployed and checkable, and none of it is a claim about a product that ships."
+              : "Erodoro caps upside. It does not protect against a fall in the collateral."}
+          </p>
+        </div>
+      </div>
+      <Ticker />
+    </section>
+  );
+}
+
+/**
+ * The one sentence someone actually reads, at the size that admits it.
+ *
+ * Not wrapped in the scroll reveal the statements below use: this is above the
+ * fold on every viewport, so it is never scrolled into view and a reveal would
+ * either never run or run before anyone could see it.
+ */
+function Statement() {
+  return (
+    <section className="border-line border-b">
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 sm:py-24 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end">
+        <div>
+          <h1 className="display-1 max-w-[16ch] text-balance">
+            Make your stocks earn.
+          </h1>
+          <p className="text-muted prose-editorial mt-8 max-w-[52ch] text-lg text-pretty">
+            Your stocks. Your terms. Sell the upside for a premium.
+          </p>
+
+          <div data-hero-actions className="mt-10 flex flex-wrap items-center gap-3">
+            {/* Square, hairline, no shadow. A rounded button reads as software
+                chrome; this page is meant to read as print. */}
+            {RIPS_ONLY_APP ? <>
+              <Link
+                href="/market-rip"
+                className="bg-accent hover:bg-text text-ink label-mono inline-flex items-center gap-3 px-6 py-3.5 tracking-[0.1em] uppercase transition-colors"
+              >
+                Explore Rips <span aria-hidden>↗</span>
+              </Link>
+              <Link
+                href="/rips/sell"
+                className="border-text text-text hover:bg-text hover:text-bg label-mono inline-flex items-center gap-3 border px-6 py-3.5 tracking-[0.1em] uppercase transition-colors"
+              >
+                Deposit stock <span aria-hidden>↗</span>
+              </Link>
+            </> : <>
+              <WaitlistButton
+                className="bg-accent hover:bg-text text-ink label-mono inline-flex items-center gap-3 px-6 py-3.5 tracking-[0.1em] uppercase transition-colors"
+              />
+              <Link
+                href="#how"
+                className="text-muted hover:text-accent-ink prose-editorial px-2 py-3 text-[0.9375rem] underline underline-offset-4 transition-colors"
+              >
+                How it works
+              </Link>
+            </>}
+          </div>
+
+          {/* Directly under the pitch, not buried in the FAQ. Someone who reads
+              only the hero must still learn what they are giving up. */}
+          <p className="text-muted prose-editorial mt-8 max-w-[54ch] text-[0.875rem]">
+            You keep the downside risk and give up gains above your chosen price.
+            Eligibility restrictions apply.
+          </p>
+        </div>
+        {RIPS_ONLY_APP ? <RipTeaser /> : <div className="min-w-0 lg:pb-2">
+          <h2 className="kicker">On your terms</h2>
+          <ul className="border-line mt-5 grid grid-cols-2 border-t border-l">
+            {[
+              "Set your cap",
+              "Pick an expiry",
+              "Choose your minimum",
+              "Highest bid wins",
+            ].map((title) => (
+              <li key={title} className="border-line hover:bg-panel flex min-h-28 min-w-0 items-end border-r border-b p-4 transition-colors sm:min-h-32 sm:p-5">
+                <h3 className="display-3 text-[1.35rem] sm:text-[1.65rem]">{title}</h3>
+              </li>
+            ))}
+          </ul>
+        </div>}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Market Rip, introduced in the hero's own print language.
+ *
+ * Static on purpose: this page renders without a wallet, an RPC or a chain
+ * read, so it shows no tickers or prices -- an example that looked live would
+ * be a number nobody can check. The pack face is a question mark because that
+ * is the product: what you get is revealed after you pay.
+ */
+function RipTeaser() {
+  return (
+    <div className="min-w-0 lg:pb-2" data-rip-teaser>
+      <h2 className="kicker">Market Rip</h2>
+      <div className="border-line mt-5 grid grid-cols-[minmax(0,8.5rem)_1fr] border-t border-l sm:grid-cols-[minmax(0,10.5rem)_1fr]">
+        {/* The pack: a hairline sleeve with a perforated strip. */}
+        <div className="border-line flex items-center justify-center border-r border-b p-4 sm:p-5">
+          <div aria-hidden className="border-text relative flex aspect-[5/7] w-full flex-col border">
+            <div className="border-text flex h-[18%] items-center justify-end border-b border-dashed px-2">
+              <span className="label-mono text-dim text-[0.625rem] tracking-[0.12em]">TEAR</span>
+            </div>
+            <div className="flex flex-1 flex-col items-center justify-center gap-1">
+              <span className="display-3 leading-none" style={{ fontSize: "clamp(2.75rem, 4vw, 3.5rem)" }}>?</span>
+              <span className="label-mono text-accent-ink text-[0.6875rem] tracking-[0.16em]">↑ UP</span>
+            </div>
+            <div className="border-line flex items-center justify-between border-t px-2 py-1.5">
+              <span className="label-mono text-[0.6875rem] tracking-[0.1em]">RIP</span>
+              <span className="label-mono text-[0.6875rem] tracking-[0.1em]">$1</span>
+            </div>
+          </div>
+        </div>
+        <div className="border-line flex min-w-0 flex-col justify-end border-r border-b p-4 sm:p-5">
+          <h3 className="display-3 text-[1.6rem] sm:text-[2rem]">$1. Pull a move.</h3>
+          <p className="text-muted prose-editorial mt-3 text-[0.9375rem] leading-6">
+            One tap buys about a dollar of a real upside position, picked at random from what sellers are offering.
+          </p>
+        </div>
+        <ol className="col-span-2 grid grid-cols-3">
+          {[
+            ["Tap", "Spend $1"],
+            ["Reveal", "See what you pulled"],
+            ["Watch", "It moves with the market"],
+          ].map(([step, line], i) => (
+            <li key={step} className="border-line min-w-0 border-r border-b p-3 sm:p-4">
+              <span className="label-mono text-dim text-[0.6875rem] tracking-[0.12em]">0{i + 1}</span>
+              <p className="display-3 mt-1 text-[1.2rem] sm:text-[1.35rem]">{step}</p>
+              <p className="text-muted prose-editorial mt-1 text-[0.8125rem] leading-5">{line}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className="mt-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+        <p className="text-muted prose-editorial text-[0.8125rem]">A real position, not points. It can expire worth nothing.</p>
+        <Link
+          href="/market-rip"
+          className="text-accent-ink label-mono text-[0.75rem] tracking-[0.1em] uppercase underline underline-offset-4"
+        >
+          Pull your first Rip →
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function ProtocolStrip() {
+  return (
+    <div className="border-line border-b">
+      <div className="mx-auto grid max-w-6xl border-l px-0 sm:grid-cols-3">
+        {[
+          ["Settlement", "Base"],
+          ["Collateral", "Tokenized equity"],
+          ["Pricing", "Request for quote"],
+        ].map(([label, value]) => (
+          <div key={label} className="border-line border-r border-b px-6 py-6 sm:border-b-0">
+            <div className="kicker">{label}</div>
+            <div className="display-3 mt-2">{value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const STEPS = [
+  {
+    n: "01",
+    title: "Lock",
+    kicker: "One deposit",
+    body: (
+      <>
+        Deposit an eligible tokenized stock and choose a strike and expiry. Erodoro
+        creates equal amounts of <Em>P</Em> and <Em>N</Em>.
+      </>
+    ),
+  },
+  {
+    n: "02",
+    title: "Sell N",
+    kicker: "Request for quote",
+    body: (
+      <>
+        <Em>N</Em> receives the value above the strike at expiry. Ask the configured
+        makers for a price; a maker signs a quote off-chain and you submit it. The
+        claim and the payment move in one call, or neither does.
+      </>
+    ),
+  },
+  {
+    n: "03",
+    title: "Settle",
+    kicker: "Anyone can call it",
+    body: (
+      <>
+        After expiry, anyone can trigger settlement using the price feed and
+        settlement window fixed when the market was created. The caller cannot
+        substitute another price.
+      </>
+    ),
+  },
+];
+
+/**
+ * How it works, given the room it needs.
+ *
+ * A short headline at the top, then deliberate empty space, then the kicker and
+ * the body sitting at the bottom edge. The gap is doing work -- it is what
+ * stops three paragraphs in three boxes from reading as a feature grid.
+ */
+function TheSplit() {
+  return (
+    <section id="how" className="border-line scroll-mt-20 border-b">
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
+        <p className="kicker">The split</p>
+        <Reveal
+          as="h2"
+          text="One tokenized-stock position becomes two claims. You decide which one to keep."
+          className="display-2 mt-5 max-w-[20ch]"
+        />
+
+        <div className="border-line mt-14 grid border-t border-l sm:grid-cols-3">
+          {STEPS.map((step) => (
+            <div
+              key={step.n}
+              className="border-line hover:bg-panel flex min-h-[18rem] flex-col border-r border-b p-7 transition-colors sm:p-8"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <span className="kicker text-accent-ink">{step.n}</span>
+                <span className="kicker">{step.kicker}</span>
+              </div>
+              <h3 className="display-3 mt-7">{step.title}</h3>
+              <p className="text-muted prose-editorial mt-4 flex-1 text-[0.9375rem]">
+                {step.body}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Risk() {
+  return (
+    <section id="risk" className="ink-band scroll-mt-20">
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
+        <p className="kicker">Know the risks</p>
+        <Reveal
+          as="h2"
+          text="It caps what you gain. It does not cushion what you lose."
+          className="display-2 mt-5 max-w-[19ch]"
+        />
+        <div className="mt-12 grid gap-10 md:grid-cols-2">
+          <div>
+            <h3 className="display-3">You still bear the downside</h3>
+            <p className="text-muted prose-editorial mt-3 text-[0.9375rem]">
+              If the collateral falls, P falls with it. The cash received for N is
+              the only offset.
+            </p>
+          </div>
+          <div>
+            <h3 className="display-3">Issuer controls still apply</h3>
+            <p className="text-muted prose-editorial mt-3 text-[0.9375rem]">
+              The issuer of a tokenized stock can pause transfers, deny an address,
+              or seize collateral from any address, including this vault. A short
+              vault causes the same proportional haircut for every redemption.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** `mark` names the two rows that give the rest of the column meaning: where
+ *  the share started, and where the cap bites. Without them $250 is a number
+ *  with no sign. */
+const ROWS: [string, string, string, string?][] = [
+  ["$250", "$250", "$0"],
+  ["$400", "$400", "$0", "start"],
+  ["$500", "$500", "$0", "strike"],
+  ["$600", "$500", "$100"],
+  ["$1000", "$500", "$500"],
+];
+
+function Payoff() {
+  return (
+    <Section id="payoff" title="The payoff">
+      <div
+        id="n"
+        className="border-line mb-8 grid border-y sm:grid-cols-2 sm:divide-x sm:divide-[var(--color-line)]"
+      >
+        <div className="py-6 sm:pr-8">
+          <div className="text-p font-mono text-[0.8125rem] tracking-[0.12em] uppercase">
+            P · Capped equity claim
+          </div>
+          <p className="text-muted mt-2 text-sm">
+            Receives the collateral value up to the strike.
+          </p>
+          <p className="mt-4 font-mono text-sm">P = min(S, K)</p>
+        </div>
+        <div className="border-line border-t py-6 sm:border-t-0 sm:pl-8">
+          <div className="text-n font-mono text-[0.8125rem] tracking-[0.12em] uppercase">
+            N · Upside claim
+          </div>
+          <p className="text-muted mt-2 text-sm">Receives only the value above the strike.</p>
+          <p className="mt-4 font-mono text-sm">N = max(S − K, 0)</p>
+        </div>
+      </div>
+      <p className="text-dim mb-6 text-sm">
+        S is the settlement price and K is the strike. P and N together represent the
+        locked collateral.
+      </p>
+      <PayoffCalculator />
+
+      {/* Focusable because it scrolls: on a narrow screen this table is wider
+          than the page, and without a tab stop there is no way to reach the
+          columns on the right from a keyboard. */}
+      <div
+        className="mt-10 overflow-x-auto"
+        tabIndex={0}
+        role="region"
+        aria-label="Payout at expiry by settlement price"
+      >
+        <table className="w-full min-w-[26rem] text-[0.95rem]">
+          <thead>
+            <tr className="border-line border-b">
+              <Th>At expiry</Th>
+              <Th>P · Capped equity claim</Th>
+              <Th>N · Upside claim</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {ROWS.map(([at, p, n, mark]) => (
+              <tr key={at} className="border-line-soft border-b">
+                <td className="text-muted py-3 pr-4 font-mono tabular-nums">
+                  {at}
+                  {mark && (
+                    <span className="text-dim ml-2 font-sans text-[0.8125rem] tracking-[0.1em] uppercase">
+                      {mark}
+                    </span>
+                  )}
+                </td>
+                <td className="text-p py-3 pr-4 font-mono tabular-nums">{p}</td>
+                <td className="text-n py-3 font-mono tabular-nums">{n}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-dim mt-4 text-sm">
+        One tokenized stock worth $400 when the position is created. Strike: $500.
+        Values exclude any cash received from selling N.
+      </p>
+    </Section>
+  );
+}
+
+/** Decision questions first, implementation detail second. Native <details>
+ * keeps the section usable before hydration and accessible by default. */
+const FAQ: [string, React.ReactNode][] = [
+  [
+    "What can each side lose?",
+    <>
+      A seller keeps the collateral&rsquo;s full downside and gives up gains above the
+      strike; the cash received for <Em>N</Em> is the only offset. An <Em>N</Em> buyer
+      can lose the entire purchase price, but there is no margin or liquidation and
+      nothing more to owe.
+    </>,
+  ],
+  [
+    "Where does the price for N come from?",
+    <>
+      From whoever is willing to buy it. Erodoro splits the collateral and settles it;
+      it does not price <Em>N</Em>. The premium a seller receives is set entirely by
+      the market, and no market exists until someone makes one.
+    </>,
+  ],
+  [
+    "Why request for quote instead of an order book?",
+    <>
+      An order book needs active makers and resting orders, and a new market starts
+      with neither. Every stock, strike and expiry is a different <Em>N</Em>, so pools
+      fragment liquidity just as quickly. Asking for a price only when a seller wants
+      one removes the empty-book problem — it does not create buyers, price discovery
+      or competitive spreads.
+    </>,
+  ],
+  [
+    "Is a quote guaranteed?",
+    <>
+      No. A maker can decline, quote a size smaller than requested, let a quote expire
+      or cancel its nonce. A quote is only executable while the maker still holds the
+      payment and the nonce is unused, and no external desk currently commits capital
+      to this market.
+    </>,
+  ],
+  [
+    "Can I exit before expiry?",
+    <>
+      If you hold equal amounts of <Em>P</Em> and <Em>N</Em>, you can merge them and
+      unlock the collateral before expiry. If you hold only one claim, an early exit
+      depends on finding someone to buy it.
+    </>,
+  ],
+  [
+    "What happens at expiry?",
+    <>
+      Trading stops. After the configured delay, anyone can settle the market using the
+      approved oracle price for its expiry window. The collateral is split into
+      the <Em>P</Em> and <Em>N</Em> pools, and holders redeem their claim from the
+      corresponding pool.
+    </>,
+  ],
+  [
+    "What do I receive at redemption?",
+    <>
+      P and N redeem for proportional amounts of the locked tokenized-stock collateral,
+      not cash. The oracle price determines how that collateral is divided between the
+      two pools.
+    </>,
+  ],
+  [
+    "What fees does Erodoro charge?",
+    <>
+      Current markets configure the protocol split fee at zero. Base network fees still
+      apply to locking, unlocking, settlement and redemption, and settlement
+      additionally costs the caller an oracle update fee.
+    </>,
+  ],
+  [
+    "Is this live and audited?",
+    <>
+      Not on Base mainnet. A Base Sepolia integration deployment is live with test
+      assets, but the contracts have not received an external security audit and no
+      production market maker is quoting real cash. Mainnet remains disabled until the
+      contracts, issuer assets, oracle and release gates are verified.
+    </>,
+  ],
+];
+
+/**
+ * Numbered, full width, one per row.
+ *
+ * Still a native <details>: the numbering and the hover tint are presentation,
+ * and giving up keyboard support and pre-hydration usability to get them would
+ * be a bad trade.
+ */
+function Faq() {
+  return (
+    <section id="faq" className="border-line scroll-mt-20 border-t">
+      <div className="mx-auto max-w-6xl px-6 pt-16 sm:pt-24">
+        <p className="kicker">Questions</p>
+        <Reveal as="h2" text="Got questions? Find answers." className="display-2 mt-5 max-w-[14ch]" />
+      </div>
+      <div className="border-line mx-auto mt-12 max-w-6xl border-t">
+        {FAQ.map(([question, answer], index) => (
+          <details key={question} className="border-line group border-b">
+            <summary className="hover:bg-panel marker:content-none flex cursor-pointer list-none items-start gap-6 px-6 py-6 transition-colors">
+              <span className="kicker text-accent-ink w-8 shrink-0 pt-1.5 tabular-nums">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span className="display-3 flex-1 text-[1.15rem]">{question}</span>
+              <span
+                aria-hidden
+                className="text-dim shrink-0 pt-1 text-lg transition-transform duration-200 group-open:rotate-45"
+              >
+                +
+              </span>
+            </summary>
+            <p className="text-muted prose-editorial max-w-[68ch] px-6 pb-7 pl-[3.5rem] text-[0.9375rem]">
+              {answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+const N_SIDE: [string, React.ReactNode][] = [
+  [
+    "Receives",
+    <>
+      Everything above the strike. Below it, <Em>N</Em> expires worthless.
+    </>,
+  ],
+  [
+    "Maximum loss",
+    <>The amount paid for N. There are no margin calls, liquidations or additional amounts to owe.</>,
+  ],
+  [
+    "Liquidity risk",
+    <>Exiting before expiry requires a counterparty. A maker can decline to quote, and no external desk has committed size.</>,
+  ],
+  [
+    "Fixed expiry",
+    <>N settles once on a specified date. It is not a perpetual position and has no funding rate.</>,
+  ],
+];
+
+/**
+ * The other side of the trade.
+ *
+ * The rest of this page is written for the person locking a share. Nothing
+ * happens unless somebody buys what they are selling, and that side had one
+ * line in step 2 — a strange emphasis for the half that is actually scarce.
+ */
+function BuyingN() {
+  return (
+    <Section title="For upside buyers">
+      <div className="border-line grid border-t border-l sm:grid-cols-2 lg:grid-cols-4">
+        {N_SIDE.map(([label, body]) => (
+          <div key={label} className="border-line border-r border-b p-5">
+            <h3 className="text-n kicker">{label}</h3>
+            <p className="text-muted prose-editorial mt-3 text-[0.9375rem]">{body}</p>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-line border-t">
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-20">
+        <div>
+          {/* Not a heading: the hero is resolved by its accessible name, and a
+              second element with a near-identical one would make that locator
+              ambiguous rather than wrong -- the harder kind of failure to
+              read. */}
+          <p className="display-2 max-w-[12ch]">Keep the share. Sell the ceiling.</p>
+
+          <div className={`mt-12 grid grid-cols-2 gap-8 ${RIPS_ONLY_APP ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
+            {[
+              ["Product", RIPS_ONLY_APP ? [["Deposit stock", "/rips/sell"], ["Buy Rips", "/market-rip"], ["My Rips", "/rips"]] : [["Earn", "/earn"], ["Markets", "/app"], ["Portfolio", "/portfolio"]]],
+              ["Protocol", [["How it works", "#how"], ["The payoff", "#payoff"], ["Risks", "#risk"]]],
+              ...(RIPS_ONLY_APP ? [] : [["Sandbox", [["Test assets", "/faucet"], ["List a market", "/create"]]]]),
+              ["Questions", [["FAQ", "#faq"]]],
+            ].map(([heading, links]) => (
+              <div key={heading as string}>
+                <p className="kicker">{heading as string}</p>
+                <ul className="mt-4 space-y-2.5">
+                  {(links as [string, string][]).map(([label, href]) => (
+                    <li key={label}>
+                      <Link
+                        href={href}
+                        className="text-muted hover:text-accent-ink label-mono underline decoration-1 underline-offset-4 opacity-80 transition-all hover:opacity-100"
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-line lg:border-l lg:pl-20">
+          <p className="display-3">What is actually deployed.</p>
+          <p className="text-muted prose-editorial mt-3 max-w-[36ch] text-[0.9375rem]">
+            Nothing is live on Base mainnet. The Sepolia addresses in the strip at the
+            top of this page are the whole of it, and every one of them can be read on
+            a block explorer without asking us.
+          </p>
+        </div>
+      </div>
+
+      <div className="border-line border-t">
+        <div className="text-dim mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-6 text-sm">
+          <span className="display-3 text-text tracking-[0.06em] uppercase">erodoro</span>
+          <span className="font-mono text-[0.75rem] tracking-[0.1em] uppercase">
+            Base settlement · Unaudited
+          </span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/**
+ * The closing band: the payoff, drawn once more at full width.
+ *
+ * The page ends on a large piece of line art -- the same gesture with the one
+ * drawing erodoro already owns: the shape of the thing being sold, flat below
+ * the strike and rising after it.
+ */
+function ClosingBand() {
+  return (
+    <div aria-hidden className="border-line text-text/12 overflow-hidden border-t">
+      <svg viewBox="0 0 1200 200" className="h-24 w-full sm:h-36" preserveAspectRatio="none">
+        <defs>
+          <pattern id="closing-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+            <path d="M24 0H0v24" fill="none" stroke="currentColor" strokeWidth="1" />
+          </pattern>
+        </defs>
+        <rect width="1200" height="200" fill="url(#closing-grid)" />
+        <path
+          d="M0 150H620L1200 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          className="text-accent/35"
+        />
+        <path d="M620 0V200" stroke="currentColor" strokeWidth="1.5" strokeDasharray="6 8" />
+      </svg>
+    </div>
+  );
+}
+
+/* --- small building blocks --- */
+
+function Section({
+  id,
+  title,
+  children,
+}: {
+  id?: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section id={id} className="border-line scroll-mt-20 border-t">
+      <div className="mx-auto grid max-w-6xl gap-8 px-6 py-16 sm:py-20 lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-12">
+        <h2 className="eyebrow lg:pt-1">{title}</h2>
+        {/* A grid item defaults to `min-width: auto`, so the payoff table's
+            26rem minimum widened this whole column past the viewport and put a
+            horizontal scrollbar on the page. The table has its own
+            `overflow-x-auto`; this lets that container actually be narrower
+            than the table inside it. */}
+        <div className="min-w-0">{children}</div>
+      </div>
+    </section>
+  );
+}
+
+function Th({ children }: { children: React.ReactNode }) {
+  return (
+    <th className="text-dim py-2.5 pr-4 text-left text-[0.8125rem] font-medium tracking-[0.1em] uppercase">
+      {children}
+    </th>
+  );
+}
+
+function Em({ children }: { children: React.ReactNode }) {
+  return <span className="text-text font-medium">{children}</span>;
+}

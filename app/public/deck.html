@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Erodoro on Base: tokenized-equity upside markets powered by B20.">
+  <title>Erodoro on Base</title>
+  <style>
+    @font-face {
+      font-family: "Base Sans";
+      src: url("./fonts/BaseSans-Regular.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Base Sans";
+      src: url("./fonts/BaseSans-Medium.woff2") format("woff2");
+      font-weight: 500 900;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Base Mono";
+      src: url("./fonts/BaseSansMono-Regular.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    :root {
+      --blue: #0000ff;
+      --black: #0a0b0d;
+      --white: #ffffff;
+      --gray-10: #eef0f3;
+      --gray-15: #dee1e7;
+      --gray-30: #b1b7c3;
+      --gray-50: #717886;
+      --gray-80: #32353d;
+      --green: #18794e;
+      --yellow: #ffd12f;
+      --red: #fc401f;
+      --sans: "Base Sans", "Inter Tight", Inter, Arial, sans-serif;
+      --mono: "Base Mono", "Roboto Mono", ui-monospace, monospace;
+      --gutter: clamp(1.25rem, 6vw, 6.5rem);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--black); }
+    body {
+      margin: 0;
+      color: var(--black);
+      background: var(--black);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font: inherit; }
+    a { color: inherit; }
+
+    .deck {
+      height: 100dvh;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+    .slide {
+      min-height: 100dvh;
+      scroll-snap-align: start;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: clamp(1.25rem, 3vh, 2.5rem);
+      padding: clamp(4.5rem, 10vh, 7rem) var(--gutter) clamp(5rem, 10vh, 7rem);
+      overflow: hidden;
+      background: var(--white);
+      border-top: 1px solid var(--gray-15);
+    }
+    .slide.dark { color: var(--white); background: var(--black); border-color: var(--gray-80); }
+    .slide.blue { color: var(--white); background: var(--blue); border-color: var(--blue); }
+
+    .square-mark {
+      position: absolute;
+      top: clamp(1.5rem, 4vw, 3.5rem);
+      right: var(--gutter);
+      width: clamp(2rem, 4vw, 3.5rem);
+      height: clamp(2rem, 4vw, 3.5rem);
+    }
+    .dark .square-mark, .blue .square-mark { filter: grayscale(1) brightness(0) invert(1); }
+    .corner {
+      position: absolute;
+      right: var(--gutter);
+      bottom: clamp(1.25rem, 3vw, 2.25rem);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-50);
+    }
+    .dark .corner, .blue .corner { color: var(--gray-30); }
+
+    .eyebrow {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: clamp(0.64rem, 1vw, 0.76rem);
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--gray-50);
+    }
+    .dark .eyebrow, .blue .eyebrow { color: var(--gray-30); }
+    .eyebrow b { color: var(--blue); font-weight: 400; }
+    .dark .eyebrow b { color: var(--white); }
+    .blue .eyebrow b { color: var(--yellow); }
+
+    h1, h2, h3, p { margin: 0; }
+    h1, h2 {
+      font-weight: 500;
+      line-height: 0.96;
+      letter-spacing: -0.045em;
+      text-wrap: balance;
+    }
+    h1 { max-width: 13ch; font-size: clamp(3.5rem, 10vw, 8.5rem); }
+    h2 { max-width: 20ch; font-size: clamp(2.25rem, 5vw, 4.8rem); }
+    h2.wide { max-width: 28ch; }
+    .lede {
+      max-width: 64ch;
+      color: var(--gray-50);
+      font-size: clamp(1rem, 1.65vw, 1.28rem);
+      line-height: 1.45;
+      text-wrap: pretty;
+    }
+    .lede strong { color: var(--black); font-weight: 500; }
+    .dark .lede, .blue .lede { color: var(--gray-15); }
+    .dark .lede strong, .blue .lede strong { color: var(--white); }
+    .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+    .blue-text { color: var(--blue); }
+    .good { color: var(--green); }
+    .warning { color: #9b6500; }
+    .danger { color: var(--red); }
+    .dark .good, .blue .good { color: #66c800; }
+    .dark .warning, .blue .warning { color: var(--yellow); }
+
+    .badge {
+      display: inline-flex;
+      width: fit-content;
+      padding: 0.45rem 0.7rem;
+      border: 1px solid currentColor;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .flow {
+      display: flex;
+      align-items: stretch;
+      flex-wrap: wrap;
+      gap: 1px;
+      max-width: 76rem;
+      background: var(--gray-15);
+      border: 1px solid var(--gray-15);
+    }
+    .flow-node {
+      flex: 1 1 10rem;
+      min-width: 9rem;
+      padding: 1rem 1.15rem;
+      color: var(--black);
+      background: var(--white);
+    }
+    .flow-node span { display: block; color: var(--gray-50); font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .flow-node b { display: block; margin-top: 0.35rem; font-size: clamp(1rem, 2vw, 1.35rem); font-weight: 500; }
+    .flow-node.accent { color: var(--white); background: var(--blue); }
+    .flow-node.accent span { color: var(--gray-15); }
+
+    .grid-2, .grid-3, .grid-4 {
+      display: grid;
+      gap: 1px;
+      background: var(--gray-15);
+      border: 1px solid var(--gray-15);
+    }
+    .card { min-width: 0; padding: clamp(1rem, 2.5vw, 1.65rem); background: var(--white); }
+    .dark .grid-2, .dark .grid-3, .dark .grid-4 { background: var(--gray-80); border-color: var(--gray-80); }
+    .dark .card { background: var(--black); }
+    .blue .grid-2, .blue .grid-3, .blue .grid-4 { background: var(--white); border-color: var(--white); }
+    .blue .card { color: var(--white); background: var(--blue); }
+    .card .k {
+      color: var(--blue);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .dark .card .k { color: var(--gray-30); }
+    .blue .card .k { color: var(--yellow); }
+    .card h3 { margin-top: 0.65rem; font-size: clamp(1.05rem, 2vw, 1.45rem); font-weight: 500; line-height: 1.1; }
+    .card p { margin-top: 0.6rem; color: var(--gray-50); font-size: 0.92rem; line-height: 1.45; }
+    .dark .card p, .blue .card p { color: var(--gray-15); }
+
+    .split { display: grid; gap: clamp(1.5rem, 5vw, 5rem); align-items: center; }
+    .stack { display: flex; flex-direction: column; gap: clamp(1rem, 2.5vh, 1.7rem); }
+
+    .equation {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: clamp(0.6rem, 2vw, 1.5rem);
+      font-family: var(--mono);
+      font-size: clamp(2.1rem, 7vw, 6rem);
+      letter-spacing: -0.04em;
+    }
+    .equation .op { color: var(--gray-30); }
+    .claim {
+      display: inline-grid;
+      place-items: center;
+      min-width: 1.3em;
+      aspect-ratio: 1;
+      color: var(--white);
+      background: var(--blue);
+    }
+    .claim.n { color: var(--black); background: var(--yellow); }
+
+    .payoff-layout { display: grid; gap: clamp(1.5rem, 4vw, 4rem); align-items: center; }
+    .payoff-box { border: 1px solid var(--gray-15); padding: clamp(1rem, 2vw, 1.5rem); }
+    .payoff-values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--gray-15); }
+    .value { padding: 0.8rem; background: var(--white); }
+    .value span { display: block; color: var(--gray-50); font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; }
+    .value output { display: block; margin-top: 0.3rem; font-family: var(--mono); font-size: clamp(1.15rem, 3vw, 2rem); }
+    input[type="range"] { width: 100%; margin-top: 1.4rem; accent-color: var(--blue); }
+    .chart { min-height: 18rem; border-left: 1px solid var(--gray-30); border-bottom: 1px solid var(--gray-30); position: relative; }
+    .chart::before { content: ""; position: absolute; left: 0; bottom: 0; width: 50%; height: 50%; background: var(--blue); clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+    .chart::after { content: ""; position: absolute; left: 50%; bottom: 50%; width: 50%; height: 50%; background: var(--yellow); clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+    .strike-line { position: absolute; left: 50%; top: 0; bottom: 0; border-left: 1px dashed var(--black); z-index: 2; }
+    .chart-label { position: absolute; z-index: 3; padding: 0.25rem 0.4rem; background: var(--white); font-family: var(--mono); font-size: 0.65rem; }
+    .chart-label.strike { left: 50%; bottom: -2rem; transform: translateX(-50%); }
+    .chart-label.p { left: 24%; bottom: 18%; color: var(--white); background: var(--blue); }
+    .chart-label.n { right: 16%; top: 20%; background: var(--yellow); }
+
+    .steps { display: grid; border-top: 1px solid var(--gray-15); }
+    .step { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--gray-15); }
+    .step b { color: var(--blue); font-family: var(--mono); font-weight: 400; }
+    .step h3 { font-size: 1.05rem; font-weight: 500; }
+    .step p { margin-top: 0.3rem; color: var(--gray-50); line-height: 1.4; }
+
+    .architecture { display: grid; gap: 1px; background: var(--gray-80); border: 1px solid var(--gray-80); }
+    .arch { padding: clamp(1rem, 2.5vw, 1.5rem); background: var(--black); }
+    .arch b { display: block; color: var(--white); font-size: 1.05rem; font-weight: 500; }
+    .arch span { display: block; margin-top: 0.4rem; color: var(--gray-30); font-family: var(--mono); font-size: 0.74rem; line-height: 1.4; }
+    .arch.core { color: var(--white); background: var(--blue); }
+    .arch.core span { color: var(--gray-15); }
+
+    table { width: 100%; border-collapse: collapse; font-size: clamp(0.78rem, 1.2vw, 0.95rem); }
+    th, td { padding: 0.8rem 0.7rem; border-bottom: 1px solid var(--gray-15); text-align: left; vertical-align: top; }
+    th { color: var(--gray-50); font-family: var(--mono); font-size: 0.65rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; }
+    td:last-child { font-family: var(--mono); }
+    tr:last-child td { border-bottom: 0; }
+    .status { display: inline-block; padding: 0.22rem 0.4rem; border: 1px solid currentColor; font-size: 0.68rem; text-transform: uppercase; }
+
+    .rail { position: fixed; z-index: 20; left: 1.1rem; top: 50%; display: grid; gap: 0.45rem; transform: translateY(-50%); }
+    .rail button { width: 0.35rem; height: 0.35rem; padding: 0; border: 0; background: var(--gray-30); cursor: pointer; }
+    .rail button.active { height: 1.5rem; background: var(--blue); }
+    .counter { position: fixed; z-index: 20; left: 1.1rem; bottom: 1rem; margin: 0; color: var(--gray-50); font-family: var(--mono); font-size: 0.65rem; }
+    .hint { position: fixed; z-index: 20; right: 1.1rem; top: 50%; margin: 0; color: var(--gray-50); font-family: var(--mono); font-size: 0.65rem; writing-mode: vertical-rl; }
+
+    /* Dark presentation theme. Base Blue is a signal, not a floodlight. */
+    .slide,
+    .slide.dark,
+    .slide.blue {
+      color: var(--white);
+      background: var(--black);
+      border-color: var(--gray-80);
+    }
+    .slide.blue::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: clamp(0.35rem, 0.7vw, 0.75rem);
+      background: var(--blue);
+    }
+    .slide .square-mark,
+    .slide.dark .square-mark,
+    .slide.blue .square-mark { filter: none; }
+    .slide .corner,
+    .slide.dark .corner,
+    .slide.blue .corner { color: var(--gray-30); }
+    .slide .eyebrow,
+    .slide.dark .eyebrow,
+    .slide.blue .eyebrow { color: var(--gray-30); }
+    .slide .eyebrow b,
+    .slide.dark .eyebrow b,
+    .slide.blue .eyebrow b { color: #7474ff; }
+    .slide .lede,
+    .slide.dark .lede,
+    .slide.blue .lede { color: var(--gray-30); }
+    .slide .lede strong,
+    .slide.dark .lede strong,
+    .slide.blue .lede strong { color: var(--white); }
+    .flow,
+    .grid-2,
+    .grid-3,
+    .grid-4,
+    .dark .grid-2,
+    .dark .grid-3,
+    .dark .grid-4,
+    .blue .grid-2,
+    .blue .grid-3,
+    .blue .grid-4 {
+      background: var(--gray-80);
+      border-color: var(--gray-80);
+    }
+    .flow-node,
+    .card,
+    .dark .card,
+    .blue .card {
+      color: var(--white);
+      background: #121419;
+    }
+    .flow-node span { color: var(--gray-30); }
+    .flow-node.accent { color: var(--white); background: var(--blue); }
+    .slide .card .k,
+    .slide.dark .card .k,
+    .slide.blue .card .k { color: #7474ff; }
+    .slide .card p,
+    .slide.dark .card p,
+    .slide.blue .card p { color: var(--gray-30); }
+    .payoff-box { border-color: var(--gray-80); }
+    .payoff-values { background: var(--gray-80); }
+    .value { background: #121419; }
+    .value span { color: var(--gray-30); }
+    .chart { border-color: var(--gray-50); }
+    .strike-line { border-color: var(--white); }
+    .chart-label { color: var(--white); background: #121419; }
+    .chart-label.p { background: var(--blue); }
+    .chart-label.n { color: var(--black); background: var(--yellow); }
+    .steps { border-color: var(--gray-80); }
+    .step { border-color: var(--gray-80); }
+    .step p { color: var(--gray-30); }
+    th, td { border-color: var(--gray-80); }
+    th { color: var(--gray-30); }
+    .warning { color: var(--yellow); }
+    .good { color: #66c800; }
+    .rail button { background: var(--gray-50); }
+
+    @media (min-width: 48rem) {
+      .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .split { grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.95fr); }
+      .payoff-layout { grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.75fr); }
+      .architecture { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (max-width: 47.99rem) {
+      .slide { justify-content: flex-start; min-height: 100dvh; overflow-y: auto; }
+      .rail, .hint { display: none; }
+      .counter { left: auto; right: 0.75rem; }
+      .payoff-values { grid-template-columns: 1fr; }
+      h1 { font-size: clamp(3.2rem, 18vw, 5.5rem); }
+    }
+    @media (prefers-reduced-motion: reduce) { .deck { scroll-behavior: auto; } }
+    @media print {
+      @page { size: 13.333in 7.5in; margin: 0; }
+      .deck { height: auto; overflow: visible; }
+      .slide { width: 13.333in; height: 7.5in; min-height: 0; page-break-after: always; break-after: page; }
+      .slide:last-child { page-break-after: auto; }
+      .rail, .counter, .hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide blue" data-title="Cover">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>Tokenized equities</b> · Base</p>
+      <span class="badge">Base Sepolia pilot</span>
+      <h1>erodoro</h1>
+      <p class="lede"><strong>Turn tokenized-stock upside into premium.</strong></p>
+      <div class="flow">
+        <div class="flow-node"><span>Lock</span><b>AAPLc</b></div>
+        <div class="flow-node"><span>Keep</span><b>P</b></div>
+        <div class="flow-node"><span>Sell</span><b>N</b></div>
+        <div class="flow-node accent"><span>Earn</span><b>USDC</b></div>
+      </div>
+      <p class="corner">Fully collateralized · no liquidations</p>
+    </section>
+
+    <section class="slide" data-title="The gap">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>01</b> · The gap</p>
+      <h2 class="wide">Stocks are onchain.<br>Covered calls aren’t.</h2>
+      <div class="grid-2">
+        <article class="card"><p class="k">Holder</p><h3>Stock → cash today</h3></article>
+        <article class="card"><p class="k">Buyer</p><h3>Premium → upside</h3></article>
+      </div>
+      <p class="corner">A familiar trade · expressed as tokens</p>
+    </section>
+
+    <section class="slide dark" data-title="The split">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>02</b> · What it does</p>
+      <h2>One stock.<br>Two claims.</h2>
+      <div class="equation"><span>1 AAPLc</span><span class="op">=</span><span class="claim">P</span><span class="op">+</span><span class="claim n">N</span></div>
+      <div class="grid-2">
+        <article class="card"><p class="k">P · seller keeps</p><h3>Capped stock</h3></article>
+        <article class="card"><p class="k">N · buyer gets</p><h3>Upside above strike</h3></article>
+      </div>
+      <p class="corner">ERC-6909 claims</p>
+    </section>
+
+    <section class="slide" data-title="The payoff">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>03</b> · The payoff</p>
+      <h2 class="wide">P gets the first $500.<br>N gets the upside.</h2>
+      <div class="payoff-layout">
+        <div class="stack">
+          <div class="payoff-box">
+            <div class="payoff-values">
+              <div class="value"><span>Price at maturity</span><output id="priceOut">$600</output></div>
+              <div class="value"><span>P receives</span><output id="pOut" class="blue-text">$500</output></div>
+              <div class="value"><span>N receives</span><output id="nOut">$100</output></div>
+            </div>
+            <input id="priceRange" type="range" min="0" max="1000" step="10" value="600" aria-label="Price at maturity">
+          </div>
+        </div>
+        <div class="chart" aria-label="P rises with the stock price until the strike; N receives value above the strike.">
+          <span class="strike-line"></span><span class="chart-label p">P</span><span class="chart-label n">N</span><span class="chart-label strike">$500 strike</span>
+        </div>
+      </div>
+      <p class="corner">Drag the price · $500 strike</p>
+    </section>
+
+    <section class="slide blue" data-title="The journey">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>04</b> · User journey</p>
+      <h2 class="wide">Stock to premium.<br>Four steps.</h2>
+      <div class="grid-4">
+        <article class="card"><p class="k">01</p><h3>Lock stock</h3></article>
+        <article class="card"><p class="k">02</p><h3>Get quote</h3></article>
+        <article class="card"><p class="k">03</p><h3>Sell N</h3></article>
+        <article class="card"><p class="k">04</p><h3>Redeem</h3></article>
+      </div>
+      <p class="corner">Atomic RFQ · self-custodied claims</p>
+    </section>
+
+    <section class="slide" data-title="Why Base">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>05</b> · Why Base</p>
+      <h2>Why Base?</h2>
+      <div class="grid-3">
+        <article class="card"><p class="k">Assets</p><h3>B20 equities</h3></article>
+        <article class="card"><p class="k">Execution</p><h3>Fast, low-cost EVM</h3></article>
+        <article class="card"><p class="k">Pricing</p><h3>Pyth + Chainlink</h3></article>
+      </div>
+      <p class="corner">Built on Base · no partnership implied</p>
+    </section>
+
+    <section class="slide dark" data-title="Architecture">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>06</b> · Architecture</p>
+      <h2 class="wide">A small, explicit stack.</h2>
+      <div class="architecture">
+        <div class="arch"><b>B20</b><span>collateral</span></div>
+        <div class="arch core"><b>Erodoro</b><span>vault + P/N</span></div>
+        <div class="arch"><b>RFQ</b><span>N ↔ USDC</span></div>
+        <div class="arch"><b>Oracles</b><span>settlement</span></div>
+      </div>
+      <p class="corner">No admin-selected settlement price</p>
+    </section>
+
+    <section class="slide" data-title="Issuer-aware safety">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>07</b> · Issuer-aware safety</p>
+      <h2 class="wide">Built for tokenized-stock risk.</h2>
+      <div class="grid-4">
+        <article class="card"><p class="k">Corporate actions</p><h3>Multiplier-aware</h3></article>
+        <article class="card"><p class="k">Transfer controls</p><h3>Policy-aware</h3></article>
+        <article class="card"><p class="k">Seizure</p><h3>Pro-rata shortfall</h3></article>
+        <article class="card"><p class="k">Oracles</p><h3>Model-bound</h3></article>
+      </div>
+      <p class="lede"><strong>Transparent risk—not zero risk.</strong></p>
+      <p class="corner">Issuer · oracle · legal · liquidity</p>
+    </section>
+
+    <section class="slide blue" data-title="Liquidity">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>08</b> · Liquidity</p>
+      <h2 class="wide">The protocol is ready.<br>The market needs a maker.</h2>
+      <div class="grid-3">
+        <article class="card"><p class="k">Pilot</p><h3>One market</h3></article>
+        <article class="card"><p class="k">Quote</p><h3>Funded first</h3></article>
+        <article class="card"><p class="k">Learn</p><h3>Measure everything</h3></article>
+      </div>
+      <p class="lede"><strong>No external maker connected yet.</strong></p>
+      <p class="corner">Next · one funded external RFQ</p>
+    </section>
+
+    <section class="slide" data-title="The ask">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>09</b> · The ask</p>
+      <h2 class="wide">One maker.<br>One funded quote.<br>One pilot.</h2>
+      <div class="steps">
+        <div class="step"><b>01</b><div><h3>Scope the market</h3></div></div>
+        <div class="step"><b>02</b><div><h3>Connect the operator</h3></div></div>
+        <div class="step"><b>03</b><div><h3>Run the RFQ</h3></div></div>
+      </div>
+      <p class="lede"><strong>Base Services Hub → market-maker introduction</strong></p>
+      <p class="corner">Pilot ask</p>
+    </section>
+
+    <section class="slide blue" data-title="Thank you">
+      <img class="square-mark" src="./brand/base-square-blue.svg" alt="">
+      <p class="eyebrow"><b>10</b> · Erodoro on Base</p>
+      <h1>Thank you.</h1>
+      <p class="lede"><strong>Tokenized-equity upside markets.</strong></p>
+      <div class="grid-2">
+        <article class="card"><p class="k">Rahul Guha</p><h3>@0xrguha</h3></article>
+        <article class="card"><p class="k">Poulav Bhowmick</p><h3>@impoulav</h3></article>
+      </div>
+      <p class="corner">Base Sepolia pilot · August 2026</p>
+    </section>
+  </main>
+
+  <nav class="rail" id="rail" aria-label="Slides"></nav>
+  <p class="counter" id="counter">01 / 11</p>
+  <p class="hint">Scroll · ↑ ↓ · ← →</p>
+
+  <script>
+    (() => {
+      const deck = document.getElementById("deck");
+      const slides = [...deck.querySelectorAll(".slide")];
+      const rail = document.getElementById("rail");
+      const counter = document.getElementById("counter");
+      let active = 0;
+
+      const buttons = slides.map((slide, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.setAttribute("aria-label", `${String(index + 1).padStart(2, "0")} · ${slide.dataset.title}`);
+        button.addEventListener("click", () => slide.scrollIntoView({ behavior: "smooth" }));
+        rail.appendChild(button);
+        return button;
+      });
+
+      function mark(index) {
+        active = Math.max(0, Math.min(slides.length - 1, index));
+        buttons.forEach((button, i) => button.classList.toggle("active", i === active));
+        counter.textContent = `${String(active + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}`;
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) mark(slides.indexOf(visible.target));
+      }, { root: deck, threshold: [0.5, 0.75] });
+      slides.forEach((slide) => observer.observe(slide));
+      mark(0);
+
+      document.addEventListener("keydown", (event) => {
+        if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(event.key)) {
+          event.preventDefault();
+          slides[Math.min(slides.length - 1, active + 1)].scrollIntoView({ behavior: "smooth" });
+        }
+        if (["ArrowUp", "ArrowLeft", "PageUp"].includes(event.key)) {
+          event.preventDefault();
+          slides[Math.max(0, active - 1)].scrollIntoView({ behavior: "smooth" });
+        }
+        if (event.key === "Home") { event.preventDefault(); slides[0].scrollIntoView({ behavior: "smooth" }); }
+        if (event.key === "End") { event.preventDefault(); slides.at(-1).scrollIntoView({ behavior: "smooth" }); }
+      });
+
+      const range = document.getElementById("priceRange");
+      const priceOut = document.getElementById("priceOut");
+      const pOut = document.getElementById("pOut");
+      const nOut = document.getElementById("nOut");
+      range.addEventListener("input", () => {
+        const price = Number(range.value);
+        priceOut.value = `$${price}`;
+        pOut.value = `$${Math.min(price, 500)}`;
+        nOut.value = `$${Math.max(price - 500, 0)}`;
+      });
+    })();
+  </script>
+</body>
+</html>
