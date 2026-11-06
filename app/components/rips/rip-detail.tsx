@@ -22,6 +22,9 @@ import {
 import { DemoBadge, TickerMark, hueStyle, positionMove } from "./bits";
 import { useRips } from "./rips-shell";
 import { ShareSheet } from "./share-card";
+import { CreSettlement } from "./cre-settlement";
+import { ResalePanel } from "./resale-panel";
+import { resalePoolFor } from "@/lib/rips/resale-deployment";
 import { RIPS_SHOW_EXTRAS } from "@/lib/rips/ui";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -123,6 +126,8 @@ export function RipDetail() {
   const settled = !!position.live?.settled;
   const redeemed = settled && position.live?.heldRaw === "0";
   const expired = settled || position.expiryTs <= now;
+  // The upside claim this position settles, for holders and for anyone browsing a listed position.
+  const settlementClaim = position.live?.claimId ?? resalePoolFor(DEPLOYMENT.contracts.ripPool, position.lotId)?.claimId ?? null;
   const lot = lots.find((l) => l.id === position.lotId);
   // Until the buyer picks, offer $5, or the largest amount the pool still has.
   const amount = picked ?? AMOUNTS.filter(a => a <= 5 && (!lot || a <= lot.availableUsd)).at(-1) ?? AMOUNTS[0];
@@ -213,24 +218,13 @@ export function RipDetail() {
             </div>
           ))}
         </dl>
-        {reference && <p className="text-dim mt-2 text-xs">Price now: Chainlink {reference.ticker} feed on Base{position.symbol.toUpperCase() !== reference.ticker ? ` (reference for test token ${position.symbol})` : ""}, updated {new Date(reference.updatedAt * 1000).toLocaleString()}. Display only; settlement uses the market&rsquo;s oracle.</p>}
         {mode === "demo" && qty > 0 && <PayoffChart position={position} spot={spot} />}
-        {mode === "live" && <p className="text-muted mt-4 text-sm">The strike uses the approved oracle’s total-return units, which can differ from a raw stock price. N redemption pays underlying collateral tokens after settlement, with contract rounding and any series fees. It does not pay cash USDC.</p>}
       </section>
 
       {/* The one action */}
       <section className="border-line/70 bg-panel mt-8 rounded-3xl border p-5">
-        {redeemed ? <><p className="text-muted text-sm">Redeemed. The claims were paid out in {position.symbol} to your wallet.</p>{state.kind === "done" && <p role="status" className="mt-3 text-sm">Redemption confirmed. Your on-chain balance was refreshed.</p>}</> : position.live?.settled ? <><p className="text-muted text-sm">Settled. Redeem the remaining claim units for underlying collateral tokens. The transaction receipt records the actual redemption.</p><Button variant="rip" disabled={position.live.heldRaw === "0" || buy.phase !== "idle" || buy.wrongNetwork} onClick={async () => { setState({ kind: "busy" }); const result = await redeem(position); setState(result.ok ? { kind: "done", added: 0 } : { kind: "failed", message: result.reason ?? "Redemption failed." }); }} className="mt-3 h-14 w-full text-base">{buy.phase !== "idle" ? "Redeeming…" : "Redeem held claims"}</Button>{state.kind === "done" && <p role="status" className="mt-3 text-sm">Redemption confirmed. Your on-chain balance was refreshed.</p>}{state.kind === "failed" && <p role="alert" className="text-danger mt-3 text-sm">{state.message}</p>}</> : expired ? (
-          <p className="text-muted text-sm leading-6">
-            This position has expired.{" "}
-            {position.source === "live" ? (
-              <>
-                Once the series settles, return here to redeem your claim units.
-              </>
-            ) : (
-              "Demo positions settle on paper only."
-            )}
-          </p>
+        {redeemed ? <><p className="text-muted text-sm">Redeemed in {position.symbol}.</p>{state.kind === "done" && <p role="status" className="mt-3 text-sm">Redeemed.</p>}</> : position.live?.settled ? <><p className="text-muted text-sm">Settled.</p><Button variant="rip" disabled={position.live.heldRaw === "0" || buy.phase !== "idle" || buy.wrongNetwork} onClick={async () => { setState({ kind: "busy" }); const result = await redeem(position); setState(result.ok ? { kind: "done", added: 0 } : { kind: "failed", message: result.reason ?? "Redemption failed." }); }} className="mt-3 h-14 w-full text-base">{buy.phase !== "idle" ? "Redeeming…" : "Redeem held claims"}</Button>{state.kind === "done" && <p role="status" className="mt-3 text-sm">Redeemed.</p>}{state.kind === "failed" && <p role="alert" className="text-danger mt-3 text-sm">{state.message}</p>}</> : expired ? (
+          <p className="text-muted text-sm leading-6">Expired.</p>
         ) : (
           <>
             <ToggleGroup
@@ -265,7 +259,7 @@ export function RipDetail() {
             >
               {state.kind === "busy" ? "Buying…" : `BUY $${amount} ${position.symbol} UP`}
             </Button>
-            {mode === "live" && lot && <p className="text-muted mt-3 text-center text-sm">Current quote: {(amount / lot.askPrice).toLocaleString("en-US", { maximumSignificantDigits: 9 })} N claim units for {amount} {DEPLOYMENT.quote?.symbol}. {lot.listedBy ? `Seller's price, set by ${lot.listedBy.slice(0, 6)}…${lot.listedBy.slice(-4)}; it stands until they change it.` : "Quotes expire within five minutes."}</p>}
+            {mode === "live" && lot && <p className="text-muted mt-3 text-center text-sm">{(amount / lot.askPrice).toLocaleString("en-US", { maximumSignificantDigits: 9 })} claims for ${amount}</p>}
             {mode === "live" && !buy.signer && <div className="mt-3"><ConnectButton /></div>}
             {mode === "live" && buy.wrongNetwork && <p className="text-danger mt-3 text-sm">Switch to {DEPLOYMENT.chainName} using the wallet control above.</p>}
             {buyWhy && (
@@ -286,7 +280,20 @@ export function RipDetail() {
             )}
           </>
         )}
+        {mode === "live" && expired && !settled && settlementClaim && <CreSettlement claimId={settlementClaim} onSettled={() => void refresh()} />}
       </section>
+
+      {mode === "live" && !expired && settlementClaim && <section aria-label="Settlement price" className="border-line/70 bg-panel mt-6 rounded-3xl border p-5 text-sm">
+        <h2 className="font-medium">Settlement price</h2>
+        <CreSettlement claimId={settlementClaim} onSettled={() => void refresh()} />
+      </section>}
+
+      {mode === "live" && !expired && <ResalePanel
+        positionId={position.live?.positionId ?? position.lotId}
+        unitDecimals={position.live?.unitDecimals ?? 8}
+        heldRaw={BigInt(position.live?.heldRaw ?? "0")}
+        onTraded={() => void refresh()}
+      />}
 
       {buy.transaction && <a className="mt-4 block text-sm underline" href={txExplorer(buy.transaction)} target="_blank" rel="noreferrer">View transaction receipt</a>}
       {/* Level 3, closed by default */}
@@ -310,7 +317,7 @@ export function RipDetail() {
         <summary className="cursor-pointer font-medium">Full details</summary>
         <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2">
           <dt className="text-dim">Instrument</dt>
-          <dd>N (upside) claim — the above-strike portion of locked collateral at settlement</dd>
+          <dd>Upside claim above the strike</dd>
           <dt className="text-dim">Underlying</dt>
           <dd>{position.name} ({position.symbol})</dd>
           <dt className="text-dim">Strike</dt>
@@ -320,16 +327,14 @@ export function RipDetail() {
           <dt className="text-dim">Quantity</dt>
           <dd className="tabular-nums">{qty.toLocaleString("en-US", { maximumFractionDigits: 9 })}</dd>
           <dt className="text-dim">Average price</dt>
-          <dd className="tabular-nums">{mode === "demo" && qty > 0 ? `${usd(paid / qty, 6)} per claim` : "See recorded cost and original quantity; transfers may change current holdings"}</dd>
+          <dd className="tabular-nums">{qty > 0 ? `${usd(paid / qty, 6)} per claim` : "—"}</dd>
           <dt className="text-dim">Valuation source</dt>
           <dd>
-            {mark?.marked === "settlement" ? "On-chain redemption pool, estimated at settlement price" : mode === "demo" ? "Simulation model (demo)" : "Unavailable: the pool sells inventory but does not buy it back"}
+            {mark?.marked === "settlement" ? "Settlement price" : mode === "demo" ? "Simulation (demo)" : "Uniswap resale pool"}
           </dd>
           <dt className="text-dim">Settlement</dt>
           <dd>
-            {position.source === "live"
-              ? "Settled by the series against its approved oracle after expiry; redeem held claim units here."
-              : "Demo only — nothing settles on chain."}
+            {position.source === "live" ? "Chainlink price via CRE, after expiry" : "Demo only"}
           </dd>
           <dt className="text-dim">Network</dt>
           <dd>{position.source === "live" ? DEPLOYMENT.chainName : "None (simulated)"}</dd>
