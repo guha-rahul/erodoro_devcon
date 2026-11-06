@@ -1,0 +1,9 @@
+{
+  "worldVerifyUrl": "https://developer.world.org/api/v4/verify/",
+  "rpId": "rp_7ee5236e79c55764",
+  "action": "buy-rips",
+  "environment": "staging",
+  "writeChain": "ethereum-testnet-sepolia-base-1",
+  "registry": "0xfed3524d60eb9936a7f5dc97d454c622c1426a78",
+  "gasLimit": "300000"
+}
