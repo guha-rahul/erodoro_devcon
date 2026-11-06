@@ -32,6 +32,8 @@ contract MarketRipPool is ReentrancyGuard {
     /// @dev The operator picks each batch's expiry inside these bounds, so it can
     ///      land while the stock market is open and settlement feeds are updating.
     uint256 public constant MIN_BATCH_DURATION = 7 days;
+    /// @dev Base Sepolia only: short batches, so a full sell, settle and redeem cycle runs within a day.
+    uint256 public constant BASE_SEPOLIA_MIN_BATCH_DURATION = 1 hours;
     uint256 public constant MAX_BATCH_DURATION = 45 days;
     uint256 public constant MAX_POSITIONS = 10;
     uint256 public constant MAX_QUOTE_AGE = 5 minutes;
@@ -343,7 +345,8 @@ contract MarketRipPool is ReentrancyGuard {
     ///        chain to fall inside US market hours.
     function createBatch(uint64 expiry) external onlyErodoro returns (uint256 id) {
         uint64 nowTs = uint64(block.timestamp);
-        if (expiry < nowTs + MIN_BATCH_DURATION || expiry > nowTs + MAX_BATCH_DURATION) revert InvalidTerms();
+        uint256 minDuration = block.chainid == 84532 ? BASE_SEPOLIA_MIN_BATCH_DURATION : MIN_BATCH_DURATION;
+        if (expiry < nowTs + minDuration || expiry > nowTs + MAX_BATCH_DURATION) revert InvalidTerms();
         id = nextBatchId++;
         batchCreatedAt[id] = nowTs;
         batchExpiry[id] = expiry;

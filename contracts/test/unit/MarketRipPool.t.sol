@@ -651,4 +651,11 @@ contract MarketRipPoolTest is Test {
         vm.prank(buyer);
         pool.ripPack(hash);
     }
+
+    function test_shortBatchesOnlyOnBaseSepolia() public {
+        vm.expectRevert(MarketRipPool.InvalidTerms.selector);
+        pool.createBatch(uint64(block.timestamp + 1 hours));
+        vm.chainId(84532);
+        pool.createBatch(uint64(block.timestamp + 1 hours));
+    }
 }
