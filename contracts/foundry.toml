@@ -1,0 +1,41 @@
+[profile.default]
+src            = "src"
+out            = "out"
+libs           = ["lib"]
+test           = "test"
+solc           = "0.8.28"
+optimizer      = true
+optimizer_runs = 1_000_000
+bytecode_hash  = "none"
+# MarketRipPool sits near the 24,576-byte EIP-170 limit; fewer optimizer runs
+# trade a little gas per call for deployable bytecode.
+additional_compiler_profiles = [{ name = "size", optimizer_runs = 2_000 }]
+compilation_restrictions = [{ paths = "src/MarketRipPool.sol", optimizer_runs = 2_000 }]
+# Unit + invariant suites run on base-std's Solidity mocks: no RPC, no precompiles.
+no_match_path  = "test/fork/**"
+
+[profile.default.fuzz]
+runs = 1024
+
+[profile.default.invariant]
+runs            = 256
+depth           = 64
+fail_on_revert  = false
+
+# `base = true` is honoured only by base-anvil's forge build. Under stock forge it
+# is inert, so this profile still compiles — it simply won't host the precompiles.
+[profile.base]
+base          = true
+no_match_path = "test/__none__/*"
+
+# The fork suite. Requires base-forge + BASE_RPC_URL; see docs/base-fork-testing.md.
+[profile.fork]
+base          = true
+no_match_path = "test/__none__/*"
+match_path    = "test/fork/*.sol"
+# The Sepolia intent fork test loads live addresses from the deployment
+# artifact instead of copying them into the test.
+fs_permissions = [{ access = "read", path = "./deployments/" }]
+
+[profile.fork.fuzz]
+runs = 64
