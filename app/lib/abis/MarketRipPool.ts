@@ -33,6 +33,19 @@ export const MarketRipPoolAbi = [
   },
   {
     "type": "function",
+    "name": "BASE_SEPOLIA_MIN_BATCH_DURATION",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "BASE_USDC",
     "inputs": [],
     "outputs": [
@@ -473,6 +486,19 @@ export const MarketRipPoolAbi = [
         "name": "",
         "type": "uint256",
         "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "humanGate",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IHumanGate"
       }
     ],
     "stateMutability": "view"
@@ -928,6 +954,19 @@ export const MarketRipPoolAbi = [
   },
   {
     "type": "function",
+    "name": "setHumanGate",
+    "inputs": [
+      {
+        "name": "gate",
+        "type": "address",
+        "internalType": "contract IHumanGate"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "setListingPrice",
     "inputs": [
       {
@@ -1177,6 +1216,19 @@ export const MarketRipPoolAbi = [
         "type": "uint64",
         "indexed": false,
         "internalType": "uint64"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "HumanGateSet",
+    "inputs": [
+      {
+        "name": "gate",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       }
     ],
     "anonymous": false

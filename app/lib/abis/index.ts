@@ -10,3 +10,7 @@ export { TestIssuerControlsAbi } from "./TestIssuerControls";
 export { IB20AssetAbi } from "./IB20Asset";
 export { IPolicyRegistryAbi } from "./IPolicyRegistry";
 export { IFallbackSettlementOracleAbi } from "./IFallbackSettlementOracle";
+export { HumanRegistryAbi } from "./HumanRegistry";
+export { CreSettlementOracleAbi } from "./CreSettlementOracle";
+export { ClaimWrapperAbi } from "./ClaimWrapper";
+export { RipsResaleHookAbi } from "./RipsResaleHook";

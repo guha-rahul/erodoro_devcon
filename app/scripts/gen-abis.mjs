@@ -24,6 +24,11 @@ const WANTED = [
   ["IB20Asset.sol", "IB20Asset"],
   ["IPolicyRegistry.sol", "IPolicyRegistry"],
   ["IFallbackSettlementOracle.sol", "IFallbackSettlementOracle"],
+  // ETHGlobal Mumbai: World ID gate, Chainlink CRE settlement oracle, Uniswap v4 resale.
+  ["HumanRegistry.sol", "HumanRegistry"],
+  ["CreSettlementOracle.sol", "CreSettlementOracle"],
+  ["ClaimWrapper.sol", "ClaimWrapper"],
+  ["RipsResaleHook.sol", "RipsResaleHook"],
 ];
 
 if (!existsSync(out)) {
