@@ -186,9 +186,8 @@ export function MyRips() {
           {settledList.length > 0 && (() => { const rows = priced(order(settledList), prices, marks); const owed = rows.reduce((s, r) => s + r.payToday, 0); return <>
             <h2 className="text-dim mt-6 text-xs font-semibold tracking-[0.2em] uppercase">Settled · {usd(owed)} to redeem</h2>
             <RipRows rows={rows} />
-            <p className="text-dim mt-2 text-[0.6875rem]">Open a Rip to redeem it for the stock it is owed.</p>
           </>; })()}
-          {active.length > 0 && (() => { const rows = priced(active, prices, marks); return <><Summary rows={rows} now={now} /><RipRows rows={rows} /><p className="text-dim mt-2 text-[0.6875rem]">&ldquo;If it ended today&rdquo; uses each stock&rsquo;s Chainlink price now; the payout is set by the price at expiry.</p></>; })()}
+          {active.length > 0 && (() => { const rows = priced(active, prices, marks); return <><Summary rows={rows} now={now} /><RipRows rows={rows} /></>; })()}
           {expired.length > 0 && (
             <>
               <h2 className="text-dim mt-10 text-xs font-semibold tracking-[0.2em] uppercase">Expired</h2>
