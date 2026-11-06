@@ -1,0 +1,13 @@
+{
+  "name": "erodoro-base-worker",
+  "private": true,
+  "type": "module",
+  "description": "Dependencies for the Cloudflare Worker in cloudflare/. The frontend has its own package.json in app/.",
+  "scripts": {
+    "test": "node --test cloudflare/*.test.mjs",
+    "test:e2e": "node scripts/e2e-auction.mjs"
+  },
+  "dependencies": {
+    "viem": "^2.55.19"
+  }
+}

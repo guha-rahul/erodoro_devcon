@@ -1,0 +1,19 @@
+# Foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/.base-fork/
+contracts/.pilot-keys/
+
+# Node / Next
+node_modules/
+.next/
+out/
+.pnpm-store/
+
+# Local env
+.env
+.env.local
+
+# Wrangler local state
+.wrangler/

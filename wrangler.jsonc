@@ -1,0 +1,95 @@
+{
+  // The frontend is a Next.js static export. A very small Worker runs first for
+  // /rpc, which proxies read-only calls so an endpoint key never reaches the
+  // browser, and /waitlist, which stores X access requests in Cloudflare D1.
+  // Every other request is served straight from app/out.
+  //
+  // Set the read endpoint with:  npx wrangler secret put PRIVATE_RPC_URL
+  // Add market makers with:      npx wrangler secret put MM_ENDPOINTS
+  //   (name|https://endpoint, comma-separated; /rfq returns the best quote)
+  // Without it /rpc falls back to the public endpoint and says so in the
+  // x-rpc-source response header.
+  //
+  // Cloudflare Workers Builds settings that go with this:
+  //   Build command   leave empty (Wrangler runs the build below)
+  //   Deploy command  npx wrangler deploy
+  //
+  // Root dependencies cover the Worker. The frontend needs its own install
+  // and static export before Wrangler can upload app/out.
+  "build": {
+    "command": "pnpm --dir app install --frozen-lockfile && SKIP_BUILD_RPC=1 pnpm --dir app build && pnpm --dir app check:export"
+  },
+  "name": "erodoro-base",
+  "compatibility_date": "2026-08-14",
+  // viem needs it for the signing path in the house market maker.
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./cloudflare/worker.mjs",
+  // The public domain. `custom_domain` has Cloudflare create the DNS record and
+  // issue the certificate itself, rather than either being managed by hand.
+  // Requires erodoro.xyz to be an active zone on this account; the deploy fails
+  // outright otherwise.
+  "routes": [
+    { "pattern": "erodoro.xyz", "custom_domain": true },
+    { "pattern": "www.erodoro.xyz", "custom_domain": true }
+  ],
+  // With routes set, Wrangler turns workers.dev (and branch preview URLs) off
+  // unless asked. Keep both: previews and the workers.dev address stay useful.
+  "workers_dev": true,
+  "preview_urls": true,
+  "vars": {
+    // Not secret: addresses and knobs. The maker key is a secret, set with
+    //   npx wrangler secret put MM_PRIVATE_KEY
+    "RFQ_ADDRESS": "0x6C4d59A4521E8C542cd39F3d128f38d79D013F62",
+    "PUBLIC_RPC_URL": "https://sepolia.base.org",
+    "RFQ_CLAIMS_ADDRESS": "0x7e63b6A2948d317ccA06d7df9437613D5249afC1",
+    "MM_QUOTE_TOKEN": "0xbD85b60dA2b9B667eb215e0F050047dBBFC46B13",
+    "MM_ENDPOINTS": "",
+    "MM_NAME": "House maker (test)",
+    "MM_SPREAD": "0.06",
+    "MM_QUOTE_TTL": "120",
+    "MM_QUOTE_DECIMALS": "6",
+    "MM_TIMEOUT_MS": "2500",
+    // 0x swap routing. The API key is a secret, set with
+    //   npx wrangler secret put ZEROX_API_KEY
+    // ZEROX_USDC pins the quote token; one leg of every proxied swap must be it.
+    "ZEROX_USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    // Gas sponsorship. PAYMASTER_URL points at the CDP paymaster RPC; the API
+    // key is a secret, set with:  npx wrangler secret put PAYMASTER_API_KEY
+    // Only these deployed addresses are ever sponsored (test-asset claim,
+    // auction creation, settlement, position redemption); every other
+    // target/selector fails closed in cloudflare/paymaster.mjs.
+    "PAYMASTER_URL": "",
+    "PAYMASTER_CHAIN_ID": "84532",
+    "PAYMASTER_DAILY_LIMIT": "5",
+    "PAYMASTER_MAX_GAS": "3000000",
+    "FAUCET_ADDRESS": "0x20fEF2FC80e34df2F47E09116BaaC2C02D71Bc19",
+    "VAULT_ADDRESS": "0x7e63b6A2948d317ccA06d7df9437613D5249afC1",
+    // AUCTION_HOUSE_ADDRESS is added when the Foundation contract is deployed.
+    // Permissionless intent auction on Base Sepolia. Timing follows the
+    // visible auction: 10 minutes of bidding, then winner settlement exclusivity.
+    // State persists to AUCTION_STORE_FILE locally; bind a D1 database as
+    // AUCTION_DB for multi-worker production (see cloudflare/auction-store.mjs).
+    "INTENT_ADDRESS": "0x8c63bbC4b077a73e67258A0F384186c316855Cd8",
+    "INTENT_CHAIN_ID": "84532",
+    "FAST_AUCTION_SECONDS": "600",
+    "SETTLEMENT_EXCLUSIVITY_SECONDS": "45",
+    "DISCOVERY_AUCTION_SECONDS": "600",
+    "FAST_BATCH_CREATION_INTERVAL_SECONDS": "2"
+  },
+  "d1_databases": [
+    {
+      "binding": "AUCTION_DB",
+      "database_name": "erodoro-auctions",
+      "database_id": "69d8a549-dd7b-434f-af24-998a7f49843e"
+    }
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./app/out",
+    // Every request passes the Worker first so it can refuse US visitors
+    // (BLOCKED_COUNTRIES in cloudflare/worker.mjs) before serving a page.
+    "run_worker_first": true,
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
