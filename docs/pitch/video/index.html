@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Source Serif 4"; src: url(assets/fonts/source-serif-4-latin-opsz-normal.woff2) format("woff2"); font-weight: 200 900; font-style: normal; }
+      @font-face { font-family: "Source Serif 4"; src: url(assets/fonts/source-serif-4-latin-opsz-italic.woff2) format("woff2"); font-weight: 200 900; font-style: italic; }
+      @font-face { font-family: "Inter"; src: url(assets/fonts/inter-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; }
+      @font-face { font-family: "IBM Plex Mono"; src: url(assets/fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2"); font-weight: 400; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0f1116; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      .serif { font-family: "Source Serif 4", Georgia, serif; font-weight: 400; }
+      .sans { font-family: Inter, sans-serif; }
+      .mono { font-family: "IBM Plex Mono", monospace; }
+      .ink { background: #111318; color: #f2efe8; }
+      .cream { background: #f2efe8; color: #14161c; }
+      .rust { background: #b9451f; color: #f7f3ea; }
+      .mask { display: inline-block; overflow: hidden; vertical-align: bottom; padding: 0 0.04em 0.12em; margin-bottom: -0.12em; }
+      .mask > span { display: inline-block; }
+      .abs { position: absolute; }
+      #gridA { position: absolute; inset: 0 -200px 0 0; background-image: linear-gradient(#ffffff0a 1px, transparent 1px), linear-gradient(90deg, #ffffff0a 1px, transparent 1px); background-size: 120px 120px; }
+      #chartA, #chartF { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+      #dotA { position: absolute; left: 0; top: 0; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #f08a5d; box-shadow: 0 0 0 8px #f08a5d33, 0 0 40px 10px #f08a5d66; }
+      #tagA { position: absolute; left: 0; top: 0; transform-origin: 0 50%; background: #f08a5d; color: #111318; font: 500 30px "IBM Plex Mono", monospace; padding: 6px 16px; border-radius: 999px; white-space: nowrap; }
+      #stage { position: absolute; inset: 0; perspective: 2200px; }
+      #phone { position: absolute; left: 745px; top: 120px; width: 430px; height: 880px; border-radius: 64px; background: #0b0c10; padding: 16px; box-shadow: 0 60px 120px -30px #14161c88, 0 0 0 2px #2a2c33 inset; }
+      #screen { position: relative; width: 100%; height: 100%; border-radius: 50px; overflow: hidden; background: #f2efe8; color: #14161c; }
+      #notch { position: absolute; left: 50%; top: 14px; width: 120px; height: 32px; margin-left: -60px; border-radius: 20px; background: #0b0c10; }
+      .tab { display: inline-block; font: 20px Inter, sans-serif; padding: 8px 16px; border: 1.5px solid #d6d1c4; border-radius: 6px; color: #4a4b50; }
+      #ripbtn { position: absolute; left: 40px; right: 40px; top: 420px; height: 150px; border-radius: 999px; background: linear-gradient(180deg, #a87b6d, #85594d); color: #fbf7f0; display: flex; align-items: center; justify-content: center; font: 600 64px Inter, sans-serif; box-shadow: 0 0 0 14px #e6ddd2, 0 24px 40px -16px #6b4a40aa; }
+      #cursor { position: absolute; left: 0; top: 0; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: #ffffffcc; border: 3px solid #14161c; box-shadow: 0 10px 30px #14161c55; }
+      #ripple { position: absolute; left: 960px; top: 652px; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; border: 6px solid #b9451f; opacity: 0; }
+      .tape { position: absolute; left: 0; white-space: nowrap; font: 30px "IBM Plex Mono", monospace; color: #6b6a64; }
+      #pack { position: absolute; left: 700px; top: 150px; width: 520px; height: 780px; opacity: 0; }
+      .pk { position: absolute; left: 0; width: 520px; background: linear-gradient(150deg, #22252e 0%, #15171d 55%, #3a1d14 100%); color: #f2efe8; }
+      #flap { top: 0; height: 150px; border-radius: 22px 22px 0 0; clip-path: polygon(0 0, 100% 0, 100% 86%, 95% 100%, 90% 86%, 85% 100%, 80% 86%, 75% 100%, 70% 86%, 65% 100%, 60% 86%, 55% 100%, 50% 86%, 45% 100%, 40% 86%, 35% 100%, 30% 86%, 25% 100%, 20% 86%, 15% 100%, 10% 86%, 5% 100%, 0 86%); display: flex; align-items: center; justify-content: space-between; padding: 0 40px 16px; }
+      #pbody { top: 140px; height: 640px; border-radius: 0 0 22px 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; overflow: hidden; }
+      #sheen { position: absolute; top: -20%; left: 0; width: 160px; height: 140%; background: linear-gradient(90deg, transparent, #ffffff26, transparent); transform: rotate(18deg); }
+      #slot { position: relative; width: 420px; height: 190px; }
+      #q { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 200px; line-height: 1; color: #f2efe8; }
+      #reel { position: absolute; left: 0; right: 0; top: 15px; height: 160px; overflow: hidden; opacity: 0; }
+      #strip { position: absolute; left: 0; right: 0; top: -30px; }
+      #strip div { height: 220px; line-height: 1; display: flex; align-items: center; justify-content: center; font-family: "Source Serif 4", serif; color: #f2efe8; }
+      #ring { position: absolute; left: 960px; top: 560px; width: 300px; height: 300px; margin: -150px 0 0 -150px; border-radius: 50%; border: 10px solid #b9451f; opacity: 0; }
+      .shred { position: absolute; left: 0; top: 0; width: 26px; height: 12px; border-radius: 2px; opacity: 0; }
+      .card { position: absolute; top: 300px; width: 470px; height: 470px; border-radius: 28px; background: #191c23; border: 1.5px solid #2c303b; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; }
+      .card svg { width: 120px; height: 120px; overflow: visible; }
+      .draw { fill: none; stroke: #f08a5d; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+      #grain { position: absolute; left: -200px; top: -200px; width: 2320px; height: 1480px; opacity: 0.075; pointer-events: none; mix-blend-mode: overlay; }
+      #vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 62%, #0000002e 100%); pointer-events: none; }
+      #wipe { position: absolute; left: -300px; top: -200px; width: 900px; height: 1480px; background: #b9451f; }
+      #flash { position: absolute; inset: 0; background: #ffffff; opacity: 0; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1920" data-height="1080">
+
+      <div id="sA" class="clip ink" data-start="0" data-duration="2.05" data-track-index="0">
+        <div id="gridA"></div>
+        <svg id="chartA" viewBox="0 0 1920 1080"><defs><linearGradient id="fillA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f08a5d" stop-opacity="0.22" /><stop offset="1" stop-color="#f08a5d" stop-opacity="0" /></linearGradient></defs><path id="areaA" fill="url(#fillA)" /><path id="lineA" fill="none" stroke="#f08a5d" stroke-width="5" stroke-linejoin="round" /></svg>
+        <div id="dotA"></div>
+        <div id="tagA">+10%</div>
+        <div class="abs" style="left: 160px; top: 300px">
+          <p class="mono" style="font-size: 38px; color: #f08a5d"><span class="mask"><span id="a1">when nvda jumps 10%,</span></span></p>
+          <p class="serif" style="font-size: 168px; line-height: 1.05; margin-top: 18px"><span class="mask"><span id="a2">$1 of it earns <span style="color: #f08a5d"><span id="cents">0</span>¢.</span></span></span></p>
+        </div>
+      </div>
+
+      <div id="sB" class="clip cream" data-start="1.85" data-duration="2.15" data-track-index="0">
+        <div id="bWrap" class="abs" style="left: 0; right: 0; top: 260px; text-align: center">
+          <p class="serif" style="font-size: 196px; line-height: 1.02"><span class="mask"><span class="bw">what</span></span> <span class="mask"><span class="bw">if</span></span> <span class="mask"><span class="bw">$1</span></span> <span class="mask"><span class="bw">bought</span></span></p>
+          <p class="serif" style="font-size: 260px; line-height: 1; color: #b9451f"><span class="mask"><span id="bMove"><i>the move.</i></span></span></p>
+        </div>
+      </div>
+
+      <div id="sC" class="clip cream" data-start="4" data-duration="4" data-track-index="0">
+        <div class="tape" id="tape1" style="top: 40px">nvda ↑ &nbsp; aapl ↑ &nbsp; msft ↑ &nbsp; amzn ↑ &nbsp; googl ↑ &nbsp; meta ↑ &nbsp; tsla ↑ &nbsp; sndk ↑ &nbsp; mstr ↑ &nbsp; spcx ↑ &nbsp; nvda ↑ &nbsp; aapl ↑ &nbsp; msft ↑ &nbsp; amzn ↑ &nbsp; googl ↑ &nbsp; meta ↑ &nbsp; tsla ↑ &nbsp; sndk ↑ &nbsp; mstr ↑ &nbsp; spcx ↑</div>
+        <div class="tape" id="tape2" style="bottom: 40px">rip a pack &nbsp;·&nbsp; pull a move &nbsp;·&nbsp; 10 stocks &nbsp;·&nbsp; 30 days &nbsp;·&nbsp; $1 &nbsp;·&nbsp; rip a pack &nbsp;·&nbsp; pull a move &nbsp;·&nbsp; 10 stocks &nbsp;·&nbsp; 30 days &nbsp;·&nbsp; $1 &nbsp;·&nbsp; rip a pack &nbsp;·&nbsp; pull a move &nbsp;·&nbsp; 10 stocks</div>
+        <div id="stage">
+          <div id="phone">
+            <div id="screen">
+              <div id="notch"></div>
+              <div style="position: absolute; left: 32px; right: 32px; top: 70px; display: flex; justify-content: space-between; align-items: center">
+                <span class="sans" style="font-size: 24px; font-weight: 600"><span style="color: #b9451f">●</span> erodoro</span>
+                <span class="sans" style="font-size: 17px; background: #14161c; color: #f2efe8; padding: 10px 14px; border-radius: 6px">connect wallet</span>
+              </div>
+              <div style="position: absolute; left: 32px; top: 140px; display: flex; gap: 10px"><span class="tab" style="border-color: #b9451f; color: #b9451f">buy</span><span class="tab">my rips</span><span class="tab">sell</span></div>
+              <p class="serif" style="position: absolute; left: 0; right: 0; top: 250px; text-align: center; font-size: 58px; font-weight: 600">$1. pull a move.</p>
+              <div id="ripbtn">rip $1</div>
+              <div style="position: absolute; left: 32px; right: 32px; top: 640px">
+                <p class="sans" style="font-size: 24px; font-weight: 600; padding-bottom: 14px; border-bottom: 1px solid #d6d1c4">available positions</p>
+                <p class="mono" style="font-size: 20px; color: #4a4b50; padding: 12px 0; border-bottom: 1px solid #e3ded2">nvda <span style="color: #b9451f">↑ up</span></p>
+                <p class="mono" style="font-size: 20px; color: #4a4b50; padding: 12px 0">tsla <span style="color: #b9451f">↑ up</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="cursor"></div>
+        <div id="ripple"></div>
+        <div id="ring"></div>
+        <div id="shreds"></div>
+        <div id="pack">
+          <div class="pk" id="pbody">
+            <div id="sheen"></div>
+            <p class="mono" style="font-size: 26px; color: #c9c6bd">rip a pack</p>
+            <div id="slot"><div id="q" class="serif">?</div><div id="reel" data-layout-allow-overflow><div id="strip"></div></div></div>
+            <p class="mono" style="font-size: 36px; color: #f08a5d">↑ up</p>
+            <div style="position: absolute; left: 40px; right: 40px; bottom: 36px; display: flex; justify-content: space-between; font: 30px 'IBM Plex Mono', monospace; color: #c9c6bd"><span>rip</span><span>$1</span></div>
+          </div>
+          <div class="pk" id="flap"><span class="mono" style="font-size: 26px; color: #c9c6bd">erodoro</span><span class="mono" style="font-size: 26px; color: #c9c6bd">tear</span></div>
+        </div>
+        <div id="det" class="abs" style="left: 1300px; top: 380px; width: 560px; display: flex; flex-direction: column; gap: 20px">
+          <p class="mono d" style="font-size: 30px; color: #6b6a64">you pulled</p>
+          <p class="serif d" style="font-size: 92px; line-height: 1">nvda <i>upside</i></p>
+          <p class="sans d" style="font-size: 32px; line-height: 1.4; color: #4a4b50">pays if nvda ends above the strike in 30 days.</p>
+        </div>
+      </div>
+
+      <div id="sD" class="clip ink" data-start="8" data-duration="2" data-track-index="0">
+        <p class="mono abs" style="left: 120px; top: 150px; font-size: 32px; color: #8a877f"><span class="mask"><span id="dHead">how a rip works</span></span></p>
+        <svg class="abs" style="left: 0; top: 0; width: 1920px; height: 1080px" viewBox="0 0 1920 1080"><path id="dLine" d="M 590 535 L 1330 535" stroke="#f08a5d" stroke-width="3" stroke-dasharray="10 12" fill="none" /></svg>
+        <div class="card" id="c1" style="left: 120px">
+          <svg viewBox="0 0 120 120"><rect class="draw" x="22" y="54" width="76" height="56" rx="10" /><path class="draw" d="M 38 54 V 38 a 22 22 0 0 1 44 0 V 54" /><circle class="draw" cx="60" cy="80" r="7" /></svg>
+          <div><p class="mono" style="font-size: 28px; color: #f08a5d">01</p><p class="serif" style="font-size: 52px; line-height: 1.12; margin-top: 10px">holders lock stock and list its upside.</p></div>
+        </div>
+        <div class="card" id="c2" style="left: 725px">
+          <svg viewBox="0 0 120 120"><rect class="draw" x="28" y="10" width="64" height="100" rx="8" /><path class="draw" d="M 28 36 H 92" /><path class="draw" d="M 52 64 q 8 -10 16 0 q 0 8 -8 12 v 6" /><circle cx="60" cy="94" r="3" fill="#f08a5d" /></svg>
+          <div><p class="mono" style="font-size: 28px; color: #f08a5d">02</p><p class="serif" style="font-size: 52px; line-height: 1.12; margin-top: 10px">you rip it for $1.</p></div>
+        </div>
+        <div class="card" id="c3" style="left: 1330px">
+          <svg viewBox="0 0 120 120"><circle class="draw" cx="60" cy="60" r="46" /><path class="draw" d="M 60 30 V 60 L 80 72" /><path class="draw" d="M 18 104 L 42 80 L 60 92 L 102 50" /></svg>
+          <div><p class="mono" style="font-size: 28px; color: #f08a5d">03</p><p class="serif" style="font-size: 52px; line-height: 1.12; margin-top: 10px">above the strike in 30 days, it pays.</p></div>
+        </div>
+      </div>
+
+      <div id="sE" class="clip rust" data-start="9.9" data-duration="2.1" data-track-index="0">
+        <p class="sans abs" style="left: 160px; top: 160px; font-size: 48px; color: #f7f3ea"><span class="mask"><span id="eLine">everyone else puts a stock in a box.</span></span></p>
+        <svg id="box" class="abs" style="left: 220px; top: 380px; width: 420px; height: 420px; overflow: visible" viewBox="0 0 420 420">
+          <path d="M 210 40 L 380 130 L 210 220 L 40 130 Z" fill="#c9562f" stroke="#f7f3ea" stroke-width="4" stroke-linejoin="round" />
+          <path d="M 40 130 L 210 220 L 210 400 L 40 310 Z" fill="#a43d1b" stroke="#f7f3ea" stroke-width="4" stroke-linejoin="round" />
+          <path d="M 380 130 L 210 220 L 210 400 L 380 310 Z" fill="#8f3416" stroke="#f7f3ea" stroke-width="4" stroke-linejoin="round" />
+          <text x="68" y="262" font-family="IBM Plex Mono, monospace" font-size="34" fill="#f7f3ea">stock</text>
+        </svg>
+        <svg class="abs" style="left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible" viewBox="0 0 1920 1080"><path id="arrow" d="M 120 1010 C 420 930, 600 720, 690 350" fill="none" stroke="#f7f3ea" stroke-width="14" stroke-linecap="round" /><path id="arrowHead" d="M 628 388 L 692 342 L 716 418" fill="none" stroke="#f7f3ea" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        <p class="serif abs" style="left: 840px; top: 420px; font-size: 200px; line-height: 0.98"><span class="mask"><span id="e2a">we sell</span></span><br /><span class="mask"><span id="e2b"><i>the upside.</i></span></span></p>
+      </div>
+
+      <div id="sF" class="clip cream" data-start="12" data-duration="3" data-track-index="0">
+        <svg id="chartF" viewBox="0 0 1920 1080"><path id="lineF" fill="none" stroke="#b9451f" stroke-opacity="0.16" stroke-width="5" stroke-linejoin="round" /></svg>
+        <div class="abs" style="left: 0; right: 0; top: 230px; text-align: center">
+          <p class="serif" id="logo" style="font-size: 260px; line-height: 1; font-weight: 500; letter-spacing: -6px"></p>
+          <p class="serif" style="font-size: 76px; margin-top: 30px"><span class="mask"><span id="fTag">buy a stock's upside for $1.</span></span></p>
+          <div style="margin-top: 46px; display: flex; justify-content: center; align-items: center; gap: 28px">
+            <span class="mono" id="fUrl" style="font-size: 44px; color: #b9451f">erodoro.xyz</span>
+            <span id="fChip" style="display: inline-flex; align-items: center; gap: 10px; background: #0000ff; color: #fff; border-radius: 999px; padding: 10px 22px; font: 26px 'IBM Plex Mono', monospace"><span style="width: 14px; height: 14px; border-radius: 50%; background: #fff; display: inline-block"></span>built on base</span>
+          </div>
+        </div>
+        <p class="sans abs" id="fRisk" style="left: 0; right: 0; bottom: 70px; text-align: center; font-size: 24px; color: #6b6a64">testnet preview. unaudited. a rip can expire worth nothing.</p>
+      </div>
+
+      <div id="wipeLayer" class="clip" data-start="1.75" data-duration="0.5" data-track-index="1" style="background: transparent"><div id="wipe"></div></div>
+      <div id="fx" class="clip" data-start="0" data-duration="15" data-track-index="2" style="pointer-events: none">
+        <div id="flash"></div>
+        <svg id="grain" viewBox="0 0 2320 1480"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" stitchTiles="stitch" /></filter><rect width="2320" height="1480" filter="url(#n)" /></svg>
+        <div id="vignette"></div>
+      </div>
+
+      <audio id="music" src="assets/music.wav" data-start="0" data-duration="15" data-volume="0.5" data-track-index="3"></audio>
+      <audio id="sfx" src="assets/sfx.wav" data-start="0" data-duration="15" data-volume="0.85" data-track-index="4"></audio>
+    </div>
+
+    <script>
+      // 120 bpm, one bar = 2 s. audio/music.py and audio/sfx.py use the same cue times.
+      let seed = 20261011;
+      const rand = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+
+      // deterministic illustrative price walk that ends about +10%
+      function walk(n, y0, y1, jitter) {
+        const pts = [];
+        for (let i = 0; i < n; i++) {
+          const k = i / (n - 1);
+          pts.push([k * 1920, y0 + (y1 - y0) * Math.pow(k, 2.2) + (rand() - 0.5) * jitter * (1 - k * 0.5)]);
+        }
+        return pts;
+      }
+      const toD = (pts) => "M " + pts.map((p) => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L ");
+      const lineA = document.getElementById("lineA");
+      const dA = toD(walk(90, 860, 470, 70));
+      lineA.setAttribute("d", dA);
+      document.getElementById("areaA").setAttribute("d", dA + " L 1920 1080 L 0 1080 Z");
+      const lenA = lineA.getTotalLength();
+      lineA.style.strokeDasharray = lenA;
+      const lineF = document.getElementById("lineF");
+      lineF.setAttribute("d", toD(walk(90, 900, 600, 50)));
+      const lenF = lineF.getTotalLength();
+      lineF.style.strokeDasharray = lenF;
+
+      const tickers = ["aapl", "tsla", "meta", "msft", "sndk", "googl", "mstr", "amzn", "spcx", "nvda"];
+      const strip = document.getElementById("strip");
+      for (let r = 0; r < 4; r++) for (const t of tickers) {
+        const d = document.createElement("div");
+        d.textContent = t;
+        d.style.fontSize = (t.length > 4 ? 120 : 150) + "px";
+        strip.appendChild(d);
+      }
+      const shreds = document.getElementById("shreds");
+      const shredSpecs = [];
+      for (let i = 0; i < 34; i++) {
+        const el = document.createElement("div");
+        el.className = "shred";
+        el.style.background = i % 3 === 0 ? "#b9451f" : i % 3 === 1 ? "#22252e" : "#d9d2c3";
+        shreds.appendChild(el);
+        shredSpecs.push({ el, x: 710 + rand() * 500, dx: (rand() - 0.5) * 900, dy: -250 - rand() * 450, rot: (rand() - 0.5) * 900, fall: 500 + rand() * 300 });
+      }
+      const logo = document.getElementById("logo");
+      for (const ch of "erodoro") {
+        const m = document.createElement("span");
+        m.className = "mask";
+        m.style.padding = "0 0 0.12em";
+        const s = document.createElement("span");
+        s.textContent = ch;
+        s.className = "lg";
+        m.appendChild(s);
+        logo.appendChild(m);
+      }
+
+      const tl = gsap.timeline({ paused: true });
+      const reveal = (el, at, dur = 0.42) => tl.fromTo(el, { yPercent: 115 }, { yPercent: 0, duration: dur, ease: "expo.out" }, at);
+      const pop = (el, at, dist = 40) => tl.fromTo(el, { opacity: 0, y: dist, scale: 0.85 }, { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: "back.out(2)" }, at);
+      const shake = (target, at, amp = 14) => {
+        [[amp, -amp * 0.6], [-amp * 0.8, amp * 0.5], [amp * 0.5, amp * 0.4], [-amp * 0.3, -amp * 0.3], [0, 0]]
+          .forEach(([x, y], i) => tl.to(target, { x, y, duration: 0.035, ease: "none" }, at + i * 0.035));
+      };
+      const placeDot = (p) => {
+        const pt = lineA.getPointAtLength(Math.max(0, Math.min(1, p)) * lenA);
+        gsap.set("#dotA", { x: pt.x, y: pt.y });
+        gsap.set("#tagA", { x: pt.x - 170, y: pt.y - 80 });
+      };
+
+      // A: cold open (0 - 2)
+      const drawA = { p: 0 };
+      tl.fromTo(drawA, { p: 0 }, { p: 1, duration: 1.9, ease: "power2.inOut", onUpdate() { lineA.style.strokeDashoffset = lenA * (1 - drawA.p); placeDot(drawA.p); } }, 0);
+      tl.fromTo("#areaA", { opacity: 0 }, { opacity: 1, duration: 1.2, ease: "none" }, 0.6);
+      tl.fromTo("#tagA", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 1.55);
+      tl.fromTo("#gridA", { x: 0 }, { x: -120, duration: 2.05, ease: "none" }, 0);
+      reveal("#a1", 0.15, 0.4);
+      reveal("#a2", 1.0, 0.36);
+      const cents = { v: 0 };
+      tl.fromTo(cents, { v: 0 }, { v: 10, duration: 0.42, ease: "power2.out", onUpdate() { document.getElementById("cents").textContent = Math.round(cents.v); } }, 1.0);
+      shake("#sA", 1.0, 10);
+
+      // rust wipe into B
+      tl.fromTo("#wipe", { x: -900, skewX: -14 }, { x: 2600, skewX: -14, duration: 0.45, ease: "power3.inOut" }, 1.75);
+      tl.fromTo("#sB", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.4, ease: "power3.inOut" }, 1.83);
+
+      // B: kinetic question (2 - 4)
+      document.querySelectorAll(".bw").forEach((el, i) => reveal(el, 2.0 + i * 0.25, 0.3));
+      reveal("#bMove", 3.0, 0.32);
+      shake("#bWrap", 3.0, 16);
+      tl.to("#bWrap", { scale: 7, opacity: 0, duration: 0.42, ease: "expo.in" }, 3.58);
+
+      // C: product (4 - 8)
+      tl.fromTo("#tape1", { x: 0 }, { x: -900, duration: 4, ease: "none" }, 4);
+      tl.fromTo("#tape2", { x: -900 }, { x: 0, duration: 4, ease: "none" }, 4);
+      tl.fromTo("#phone", { y: 900, rotationY: -28, rotationX: 18, rotationZ: 6 }, { y: 0, rotationY: -10, rotationX: 6, rotationZ: 0, duration: 0.6, ease: "expo.out" }, 4.0);
+      tl.to("#phone", { rotationY: 0, rotationX: 0, duration: 0.45, ease: "power2.inOut" }, 4.5);
+      tl.fromTo("#cursor", { x: 1500, y: 1150, opacity: 0 }, { x: 960, y: 652, opacity: 1, duration: 0.5, ease: "power3.out" }, 4.4);
+      tl.to("#cursor", { scale: 0.7, duration: 0.06, ease: "power2.in" }, 4.94).to("#cursor", { scale: 1, duration: 0.1, ease: "power2.out" }, 5.0);
+      tl.to("#ripbtn", { scale: 0.93, duration: 0.06, ease: "power2.in" }, 4.94).to("#ripbtn", { scale: 1, duration: 0.12, ease: "back.out(3)" }, 5.0);
+      tl.fromTo("#ripple", { scale: 0.3, opacity: 0.9 }, { scale: 2.6, opacity: 0, duration: 0.45, ease: "expo.out", immediateRender: false }, 5.0);
+      tl.to("#phone", { scale: 0.8, y: 140, opacity: 0, filter: "blur(10px)", duration: 0.35, ease: "power3.in" }, 5.05);
+      tl.to("#cursor", { opacity: 0, duration: 0.15 }, 5.05);
+      tl.fromTo("#pack", { scale: 0.25, y: 260, rotation: -12, opacity: 0 }, { scale: 1, y: 0, rotation: 0, opacity: 1, duration: 0.42, ease: "back.out(1.6)" }, 5.05);
+      tl.fromTo("#sheen", { x: -300 }, { x: 760, duration: 0.45, ease: "power2.inOut" }, 5.05);
+      shake("#pack", 5.4, 5);
+      tl.to("#flap", { x: 520, y: -560, rotation: 52, duration: 0.42, ease: "power3.out" }, 5.5);
+      tl.to("#flap", { opacity: 0, duration: 0.15 }, 5.78);
+      shredSpecs.forEach((s, i) => {
+        const t0 = 5.5 + (i % 5) * 0.012;
+        tl.fromTo(s.el, { x: s.x, y: 300, rotation: 0, opacity: 0 }, { x: s.x + s.dx, y: 300 + s.dy, rotation: s.rot, opacity: 1, duration: 0.45, ease: "expo.out" }, t0);
+        tl.to(s.el, { y: 300 + s.dy + s.fall, opacity: 0, duration: 0.9, ease: "power2.in" }, t0 + 0.45);
+      });
+      tl.set("#q", { opacity: 0 }, 5.62).set("#reel", { opacity: 1 }, 5.62);
+      tl.fromTo("#strip", { y: 0, filter: "blur(9px)" }, { y: -(tickers.length * 4 - 1) * 220, filter: "blur(0px)", duration: 0.88, ease: "power3.out" }, 5.62);
+      strip.querySelectorAll("div").forEach((d, i, all) => { if (i < all.length - 1) tl.set(d, { opacity: 0 }, 6.52); });
+      tl.fromTo("#ring", { scale: 0.4, opacity: 1 }, { scale: 3.2, opacity: 0, duration: 0.6, ease: "expo.out", immediateRender: false }, 6.5);
+      tl.fromTo("#pbody", { boxShadow: "0 0 0px 0px #b9451f00" }, { boxShadow: "0 0 120px 30px #b9451f88", duration: 0.12, ease: "power2.out" }, 6.5)
+        .to("#pbody", { boxShadow: "0 40px 80px -20px #14161c66", duration: 0.6, ease: "power2.out" }, 6.62);
+      shake("#stage", 6.5, 8);
+      tl.to("#pack", { x: -280, duration: 0.5, ease: "expo.out" }, 6.58);
+      document.querySelectorAll("#det .d").forEach((el, i) => pop(el, 6.65 + i * 0.15, 30));
+
+      // D: mechanic (8 - 10)
+      tl.fromTo("#sD", { x: 220 }, { x: 0, duration: 0.22, ease: "power3.out" }, 8.0);
+      tl.fromTo("#flash", { opacity: 0.18 }, { opacity: 0, duration: 0.14, ease: "none", immediateRender: false }, 8.0);
+      reveal("#dHead", 8.0, 0.3);
+      ["#c1", "#c2", "#c3"].forEach((id, i) => {
+        tl.fromTo(id, { y: 160, opacity: 0, rotation: 3 }, { y: 0, opacity: 1, rotation: 0, duration: 0.4, ease: "back.out(1.7)" }, 8.0 + i * 0.5);
+        document.querySelectorAll(id + " .draw").forEach((p) => {
+          const len = p.getTotalLength();
+          tl.fromTo(p, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: 0.45, ease: "power2.out" }, 8.12 + i * 0.5);
+        });
+      });
+      tl.fromTo("#dLine", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 8.4);
+
+      // E: positioning (10 - 12)
+      tl.fromTo("#sE", { clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(75% at 50% 50%)", duration: 0.35, ease: "power3.inOut" }, 9.9);
+      reveal("#eLine", 10.05, 0.36);
+      tl.fromTo("#box", { scale: 0.5, opacity: 0, rotation: -8 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.35, ease: "back.out(2)" }, 10.05);
+      const arrow = document.getElementById("arrow");
+      const lenArr = arrow.getTotalLength();
+      tl.fromTo(arrow, { strokeDasharray: lenArr, strokeDashoffset: lenArr }, { strokeDashoffset: 0, duration: 0.32, ease: "power3.in" }, 10.2);
+      tl.fromTo("#arrowHead", { opacity: 0 }, { opacity: 1, duration: 0.08 }, 10.5);
+      tl.to("#box", { x: -520, y: 260, rotation: -38, opacity: 0, duration: 0.5, ease: "power3.in" }, 10.42);
+      reveal("#e2a", 10.5, 0.34);
+      reveal("#e2b", 10.62, 0.34);
+      shake("#sE", 10.5, 14);
+
+      // F: end card (12 - 15)
+      tl.fromTo("#sF", { x: 260 }, { x: 0, duration: 0.22, ease: "power3.out" }, 12.0);
+      tl.fromTo("#flash", { opacity: 0.22 }, { opacity: 0, duration: 0.14, ease: "none", immediateRender: false }, 12.0);
+      document.querySelectorAll(".lg").forEach((el, i) => reveal(el, 12.0 + i * 0.06, 0.4));
+      tl.fromTo(lineF, { strokeDashoffset: lenF }, { strokeDashoffset: 0, duration: 2.6, ease: "power2.inOut" }, 12.0);
+      reveal("#fTag", 12.5, 0.4);
+      pop("#fUrl", 13.0, 20);
+      pop("#fChip", 13.25, 20);
+      pop("#fRisk", 13.5, 10);
+
+      // slow camera push on every scene
+      for (const [id, a, d] of [["#sA", 0, 2.05], ["#sC", 4, 4], ["#sD", 8, 2], ["#sE", 9.9, 2.1], ["#sF", 12, 3]]) {
+        tl.fromTo(id, { scale: 1 }, { scale: 1.04, duration: d, ease: "none" }, a);
+      }
+      // film grain: new offset 15 times a second
+      for (let i = 0; i <= 225; i++) tl.set("#grain", { x: Math.round((rand() - 0.5) * 300), y: Math.round((rand() - 0.5) * 300) }, i / 15);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

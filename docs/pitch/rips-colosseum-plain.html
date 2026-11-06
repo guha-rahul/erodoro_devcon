@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Erodoro Rips: Colosseum pitch (plain)</title>
+<style>
+*{margin:0;box-sizing:border-box}body{background:#2a2a2a;padding:24px 0}
+.frame{width:min(96vw,1280px);aspect-ratio:16/9;margin:0 auto 12px;overflow:hidden;position:relative;box-shadow:0 2px 12px #0006}
+section{width:1920px;height:1080px;position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden}
+section ul{padding-left:1.2em}
+x-shape{display:block;clip-path:polygon(0 30%,60% 30%,60% 0,100% 50%,60% 100%,60% 70%,0 70%)}
+.notes{display:block;width:min(96vw,1280px);margin:0 auto 32px;color:#cfcfcf;font:15px/1.5 system-ui,sans-serif}
+.notes::before{content:"Speaker notes: ";font-weight:600}
+</style></head><body>
+<div class="frame"><section id="cover" data-transition="fade" style="background:#fcfcfa;color:#1f1f1f;font-family:Arial, Helvetica, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:40px">
+<h1 style="font-size:120px;font-weight:400;line-height:1.1;text-align:center">Erodoro Rips</h1>
+<p style="font-size:48px;color:#4a4a4a;text-align:center">A stock's upside for $1</p>
+</section></div><aside class="notes">Ninety seconds, nine slides, one sentence each. Erodoro Rips sells a stock's upside, not the stock, for one dollar, in a blind pack. Live on Base Sepolia at erodoro.xyz.</aside>
+
+<div class="frame"><section id="team" data-transition="fade" style="background:#fcfcfa;color:#1f1f1f;font-family:Arial, Helvetica, sans-serif;padding:128px;display:flex;flex-direction:column;gap:64px">
+<h2 style="font-size:56px;font-weight:400;line-height:1.2">Founders who already shipped Rips on two chains</h2>
+<div style="display:flex;gap:96px">
+<div style="display:flex;gap:40px;align-items:start;flex:1">
+<img alt="Photo of Rahul Guha" style="width:260px;height:300px;object-fit:cover;background:#e6e6e2">
+<p style="font-size:30px;line-height:1.45;color:#3c3c3c">Rahul (@0xrguha): [built and shipped X; previously Y]</p>
+</div>
+<div style="display:flex;gap:40px;align-items:start;flex:1">
+<img alt="Photo of Poulav Bhowmick" style="width:260px;height:300px;object-fit:cover;background:#e6e6e2">
+<p style="font-size:30px;line-height:1.45;color:#3c3c3c">Poulav (@impoulav): [built and shipped X; previously Y]</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:96px;width:1664px;font-size:24px;line-height:1.4;color:#6a6a6a">Existing experience and code adapted from the Solana project; existing Base protocol/scaffolding reused; new Base integration and purchase protections authored for this port.</p>
+</section></div><aside class="notes">Vibhu leads with the team right after the title: the strongest credential first. Swap the placeholders for your single most impressive line each: exits, revenue, big-name employers, prior wins. The grey line is the required Colosseum provenance disclosure, word for word.</aside>
+
+<div class="frame"><section id="problem" data-transition="fade" style="background:#fcfcfa;color:#1f1f1f;font-family:Arial, Helvetica, sans-serif;padding:128px;display:flex;flex-direction:column;gap:64px">
+<h2 style="font-size:56px;font-weight:400;line-height:1.2">When NVDA jumps 10%, a $1 slice of it earns 10 cents</h2>
+<div style="display:flex;gap:96px;align-items:start">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;border:1px solid #9a9a9a;padding:32px">
+<h3 style="font-size:28px;font-weight:700">Market: both halves are already onchain</h3>
+<table style="font-size:26px;color:#3c3c3c">
+<tr><th style="width:55%;text-align:left">Signal</th><th style="width:45%;text-align:left">Size</th></tr>
+<tr><td>Onchain pack ripping (gacha), June 2026</td><td>$344M a month, ~6x in a year</td></tr>
+<tr><td>Tokenized stock volume (xStocks)</td><td>$3B+ onchain by Jan 2026</td></tr>
+</table>
+<p style="font-size:24px;color:#6a6a6a">Sources: Messari; Blockworks via Programming Insider; Solana xStocks case study</p>
+</div>
+<div style="width:620px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:34px;line-height:1.35;color:#3c3c3c">People already rip packs onchain, and stocks are already onchain</p>
+<p style="font-size:34px;line-height:1.35;color:#3c3c3c">But $1 still can't buy the move: options sit behind brokers and 100-share contracts</p>
+<p style="font-size:34px;line-height:1.35;font-weight:700">How do you give $1 the move?</p>
+</div>
+</div>
+</section></div><aside class="notes">Mirror Vibhu's problem slide: a sharp claim as the title, a small market table on the left, and three short lines on the right ending in a question the next slide answers.</aside>
+
+<div class="frame"><section id="mechanic" data-transition="fade" style="background:#fcfcfa;color:#1f1f1f;font-family:Arial, Helvetica, sans-serif;padding:128px;display:flex;flex-direction:column;gap:72px">
+<h2 style="font-size:56px;font-weight:400;line-height:1.25">Ripping is a proven onchain habit: one Solana card platform opens 215,000 packs a week</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:64px">
+<div style="display:flex;flex-direction:column;gap:16px;border-top:2px solid #1f1f1f;padding-top:32px">
+<p style="font-size:96px;line-height:1.0">~200</p>
+<p style="font-size:30px;line-height:1.4;color:#3c3c3c">packs per user: 22,000+ users have opened ~4.5M packs on Collector Crypt</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;border-top:2px solid #1f1f1f;padding-top:32px">
+<p style="font-size:96px;line-height:1.0">$344M</p>
+<p style="font-size:30px;line-height:1.4;color:#3c3c3c">ripped in one month (June 2026) across the top onchain pack platforms</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;border-top:2px solid #1f1f1f;padding-top:32px">
+<p style="font-size:96px;line-height:1.0">#1</p>
+<p style="font-size:30px;line-height:1.4;color:#3c3c3c">Collector Crypt passed pump.fun in daily revenue (June 2026)</p>
+</div>
+</div>
+<p style="font-size:34px;line-height:1.4;font-weight:700">Today people rip packs for trading cards. We let them rip for stock upside.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6a6a6a">Sources: Collector Crypt via Solana Compass and Crypto Briefing; Messari; Genfinity</p>
+</section></div><aside class="notes">The point: the mechanic is not a bet, it is a habit. 22,000 users opened about 4.5 million packs, roughly 200 each, which is repeat behaviour. Pack ripping is one of the biggest consumer revenue lines on Solana. We take the same mechanic and point it at real stock upside. Caveat if asked: most card platforms buy back 85-90% of pulls, so their net revenue is much smaller than spend; Messari puts July at $284M gross and about $35M after buybacks.</aside>
+
+<div class="frame"><section id="product" data-transition="fade" style="background:#fcfcfa;color:#1f1f1f;font-family:Arial, Helvetica, sans-serif;padding:128px;display:flex;flex-direction:column;gap:64px">
+<h2 style="font-size:56px;font-weight:400;line-height:1.2">We sell a stock's upside for $1, in a blind pack</h2>
+<div style="display:flex;gap:64px;align-items:start">
+<ul style="width:600px;font-size:32px;line-height:1.4;color:#3c3c3c;display:flex;flex-direction:column;gap:24px">
+<li>One tap pulls a random upside position on 1 of 10 stocks: NVDA, TSLA, AAPL and more</li>
+<li>It pays if the stock ends above the strike after 30 days</li>
+<li>Holders lock stock and list its upside; every rip pays them directly</li>
+</ul>
+<img src="landing.png" alt="Erodoro Rips landing page: Buy a stock's upside for $1" style="width:1000px;height:682px;object-fit:contain;background:#1f1f1f">
+</div>
+</section></div><aside class="notes">Vibhu shows the product in one picture: the checkout with the discount applied. Ours is the rip itself. If you can, swap the screenshot for the reveal card after a rip, showing the ticker, strike and the $1 paid.</aside>
+
+<div class="frame"><section id="flywheel" data-transition="fade" style="background:#fcfcfa;color:#1f1f1f;font-family:Arial, Helvetica, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center">
+<h2 style="font-size:56px;font-weight:400;line-height:1.3;width:1500px">The flywheel: holders earn by listing upside, buyers rip it for $1, and every new seller adds stocks and odds that bring more rippers</h2>
+</section></div><aside class="notes">One sentence, nothing else on the slide, exactly like Vibhu's. Say it slowly: two sides, each one makes the product better for the other.</aside>
+
+<div class="frame"><section id="traction" data-transition="fade" style="background:#fcfcfa;color:#1f1f1f;font-family:Arial, Helvetica, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-size:56px;font-weight:400;line-height:1.25">It's working: [__] rips by [__] buyers on Base Sepolia, up [__]% week over week, and [__] people on the waitlist</h2>
+<div style="display:flex;flex-direction:column;gap:12px;background:#2f3542;padding:32px 40px">
+<p style="font-size:26px;font-weight:700;color:#f2f2f2">Last 14 days</p>
+<table style="font-size:26px;color:#e6e6e6">
+<tr><th style="width:20%;text-align:left">Day</th><th style="width:20%;text-align:left">Rips</th><th style="width:20%;text-align:left">Buyers</th><th style="width:20%;text-align:left">Seller listings</th><th style="width:20%;text-align:left">Redeemed</th></tr>
+<tr><td>Oct [__]</td><td>[__]</td><td>[__]</td><td>[__]</td><td>[__]</td></tr>
+<tr><td>Oct [__]</td><td>[__]</td><td>[__]</td><td>[__]</td><td>[__]</td></tr>
+<tr><td>Oct [__]</td><td>[__]</td><td>[__]</td><td>[__]</td><td>[__]</td></tr>
+<tr><td>Oct [__]</td><td>[__]</td><td>[__]</td><td>[__]</td><td>[__]</td></tr>
+</table>
+</div>
+</section></div><aside class="notes">This is the slide that sold Vibhu's pitch: a real growth number in the title and a raw table underneath. Fill it only with real onchain numbers from the pool's purchase events and the waitlist table. If the numbers are small, show them anyway with the growth rate; judges trust raw data more than polish.</aside>
+
+<div class="frame"><section id="wedge" data-transition="fade" style="background:#fcfcfa;color:#1f1f1f;font-family:Arial, Helvetica, sans-serif;padding:128px;display:flex;flex-direction:column;gap:64px">
+<h2 style="font-size:56px;font-weight:400;line-height:1.2">Our GTM wedge: crypto natives who already rip packs</h2>
+<div style="display:flex;gap:64px;align-items:start">
+<ul style="width:640px;font-size:30px;line-height:1.4;color:#3c3c3c;display:flex;flex-direction:column;gap:24px">
+<li>Start where pulls get shared: a Base App and Farcaster mini-app, plus hackathon and Base communities</li>
+<li>Seed supply from tokenized-stock holders on Base, who earn on upside they aren't using</li>
+<li>Then expand to Solana with xStocks, and to everyday stock fans through gifted rips</li>
+</ul>
+<img alt="[Picture: a shared pull card, or the event or community you start with]" style="width:960px;height:600px;object-fit:cover;background:#e6e6e2">
+</div>
+</section></div><aside class="notes">Vibhu's wedge was concrete: one event, already 10% of demand. Make ours as concrete as you can: name the first community or event and any share you already have of it. The image slot is for a photo or a shared pull card.</aside>
+
+<div class="frame"><section id="signal" data-transition="fade" style="background:#fcfcfa;color:#1f1f1f;font-family:Arial, Helvetica, sans-serif;padding:128px;display:flex;flex-direction:column;gap:64px">
+<h2 style="font-size:56px;font-weight:400;line-height:1.25">The flywheel is spinning: [organic signal, e.g. a seller who listed without being asked, or a user sharing their pull]</h2>
+<img alt="[Screenshot of the post, listing or message that proves organic demand]" style="width:1000px;height:420px;object-fit:contain;background:#1f1f1f">
+</section></div><aside class="notes">Vibhu's strongest moment: a screenshot of someone else promoting his code unprompted. Use one real, unprompted signal: a tweet, a cast, a stranger's seller listing, a DM. If there isn't one yet, cut this slide rather than fake it.</aside>
+
+<div class="frame"><section id="ask" data-transition="fade" style="background:#fcfcfa;color:#1f1f1f;font-family:Arial, Helvetica, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center">
+<h2 style="font-size:56px;font-weight:400;line-height:1.3;width:1500px">We're raising $[__] to take Rips to Base mainnet and Solana, and put every stock's upside one dollar away</h2>
+<p style="position:absolute;left:128px;bottom:96px;width:1664px;font-size:24px;color:#6a6a6a">erodoro.xyz · @0xrguha · @impoulav · Testnet preview, unaudited; a rip can expire worth nothing</p>
+</section></div><aside class="notes">One sentence, like Vibhu's close. State the amount and the one milestone it buys. If you're not raising, change it to what you want from the judges, for example: "We're asking for [accelerator spot / grant] to launch on mainnet in [month]."</aside>
+
+<script>
+const fit=()=>document.querySelectorAll(".frame").forEach(f=>f.firstElementChild.style.transform="scale("+f.clientWidth/1920+")");
+addEventListener("resize",fit);fit();
+</script></body></html>
