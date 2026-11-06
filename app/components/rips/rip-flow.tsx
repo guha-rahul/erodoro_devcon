@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { txExplorer } from "@/lib/deployment";
+import type { Hash } from "viem";
+import { DEPLOYMENT, txExplorer } from "@/lib/deployment";
+import { humanGateRefusal } from "@/lib/rips/human-gate";
+import type { PackPull, PackResult } from "@/lib/rips/use-rips";
 import {
   BUY_MORE_PRICE,
   RIP_PRICE,
@@ -58,7 +61,28 @@ export function useRipFlow() {
   const [stage, setStage] = useState<Stage>({ kind: "idle" });
   const busy = useRef(false);
 
-  /** `count` packs in one purchase on pools that sell packs; older pools pull one Rip. */
+  /**
+   * `count` packs, in as many transactions as the pool's per-call limit needs. The World ID allowance is checked
+   * for the whole order first; if a later transaction fails, the packs already bought are still shown.
+   */
+  const buyPacks = useCallback(async (count: number): Promise<PackResult> => {
+    const pool = DEPLOYMENT.contracts.ripPool;
+    if (pool && buy.signer) {
+      const refusal = await humanGateRefusal(pool, buy.signer, BigInt(count) * 1_000_000n).catch(() => null);
+      if (refusal) return { ok: false, reason: refusal };
+    }
+    const pulls: PackPull[] = [];
+    let hash: Hash | undefined;
+    for (let left = count; left > 0; left -= buy.maxPacks) {
+      const r = await buy.buyPack(Math.min(left, buy.maxPacks));
+      if (!r.ok) return pulls.length ? { ok: true, pulls, hash: hash! } : r;
+      pulls.push(...r.pulls);
+      hash = r.hash;
+    }
+    return { ok: true, pulls, hash: hash! };
+  }, [buy]);
+
+  /** `count` packs on pools that sell packs; older pools pull one Rip. */
   const rip = useCallback(async (count = 1) => {
     if (busy.current) return;
     // Pack pools sell $1 across ten stocks; older pools pull one.
@@ -68,7 +92,7 @@ export function useRipFlow() {
     setStage({ kind: "charging", source: lot?.source ?? "live" });
     const started = performance.now();
     const result = buy.packs
-      ? await buy.buyPack(count)
+      ? await buyPacks(count)
       : await buy.buy(lot!, RIP_PRICE, "rip").then((r) => r.ok ? { ok: true as const, pulls: [{ position: r.position, fill: r.fill, lot: r.lot }], hash: r.fill.signature } : r);
     // Enough anticipation to register, never so much that it drags.
     const held = performance.now() - started;
@@ -83,7 +107,7 @@ export function useRipFlow() {
     await wait(reduced ? 0 : result.pulls.length > 1 ? 1100 : 320);
     setStage({ kind: "revealed", pulls: result.pulls, hash: result.hash ?? undefined });
     busy.current = false;
-  }, [lots, buy]);
+  }, [lots, buy, buyPacks]);
 
   const close = useCallback(() => {
     if (!busy.current) setStage({ kind: "idle" });
@@ -174,7 +198,6 @@ export function RipOverlay({
           <p className="text-muted mt-3 text-sm leading-6">
             {stage.message}
           </p>
-          <p className="text-dim mt-2 text-xs">Nothing was bought unless it appears in My Rips.</p>
           {buy.transaction && <a className="mt-3 block text-sm underline" href={txExplorer(buy.transaction)} target="_blank" rel="noreferrer">Check transaction receipt</a>}
           <div className="mt-6 grid gap-2">
             <Button variant="rip" className="h-14 text-lg" onClick={onRipAgain}>

@@ -80,11 +80,12 @@ export function RipsHome() {
   const { stage, rip, close } = useRipFlow();
 
   const [filter, setFilter] = useState("");
-  // Packs per purchase: one per dollar, up to what the pool can fill and one call allows.
+  // Packs per purchase: one per dollar, up to what the pool can fill and the wallet can pay. Orders larger than
+  // one call allows (MAX_PACKS) go out as several transactions.
   const [count, setCount] = useState(1);
   const packMode = modeReady && mode === "live" && buy.packs;
   const affordable = buy.signer && balance !== null ? Math.floor(balance) : Infinity;
-  const maxCount = packMode ? Math.max(1, Math.min(buy.maxPacks, buy.packsLeft, affordable)) : 1;
+  const maxCount = packMode ? Math.max(1, Math.min(buy.packsLeft, affordable)) : 1;
   const n = Math.min(Math.max(1, count), maxCount);
   const [shared, setShared] = useState<ShareSubject | null>(null);
   useEffect(() => { const t = setTimeout(() => setShared(readShared(window.location.search)), 0); return () => clearTimeout(t); }, []);
@@ -173,25 +174,25 @@ export function RipsHome() {
           </Button>
         </div>
 
-        {packMode && !why && <div className="-mt-4 mb-6 flex flex-col items-center gap-2">
+        {packMode && <div className="-mt-4 mb-6 flex flex-col items-center gap-2">
           <div role="group" aria-label="Rips to buy" className="border-line bg-panel inline-flex items-center rounded-full border p-1">
-            <Button variant="ghost" size="icon" aria-label="One fewer Rip" disabled={n <= 1 || stage.kind !== "idle"} onClick={() => setCount(n - 1)} className="size-10 rounded-full text-xl">−</Button>
-            <input aria-label="Number of Rips" inputMode="numeric" value={n} disabled={stage.kind !== "idle"}
+            <Button variant="ghost" size="icon" aria-label="One fewer Rip" disabled={n <= 1 || !!why || stage.kind !== "idle"} onClick={() => setCount(n - 1)} className="size-10 rounded-full text-xl">−</Button>
+            <input aria-label="Number of Rips" inputMode="numeric" value={n} disabled={!!why || stage.kind !== "idle"}
               onChange={(e) => { const v = Number(e.target.value.replace(/\D/g, "")); if (v > 0) setCount(v); }}
               className="font-display w-14 bg-transparent text-center text-2xl font-semibold tabular-nums outline-none" />
-            <Button variant="ghost" size="icon" aria-label="One more Rip" disabled={n >= maxCount || stage.kind !== "idle"} onClick={() => setCount(n + 1)} className="size-10 rounded-full text-xl">+</Button>
+            <Button variant="ghost" size="icon" aria-label="One more Rip" disabled={n >= maxCount || !!why || stage.kind !== "idle"} onClick={() => setCount(n + 1)} className="size-10 rounded-full text-xl">+</Button>
           </div>
           <p className="text-muted text-xs tabular-nums">
-            {buy.packsLeft} {buy.packsLeft === 1 ? "Rip" : "Rips"} available{buy.packsLeft > buy.maxPacks ? ` · up to ${buy.maxPacks} at once` : ""}{affordable < Math.min(buy.maxPacks, buy.packsLeft) ? ` · you can afford ${affordable}` : ""}
+            {buy.packsLeft} {buy.packsLeft === 1 ? "Rip" : "Rips"} available{affordable < buy.packsLeft ? ` · you can afford ${affordable}` : ""}{n > buy.maxPacks ? ` · ${Math.ceil(n / buy.maxPacks)} transactions` : ""}
           </p>
         </div>}
 
         <p id="rip-sub" className="text-muted mx-auto max-w-xs text-sm leading-6">
           {needsWallet
-            ? (why ?? "Connect a wallet to Rip. Each Rip buys $1 of an upside claim.")
+            ? (why ?? "Connect a wallet to Rip.")
             : (why ??
               (mode === "demo"
-                ? `A random simulated position from the demo pool. Nothing is bought.`
+                ? `Demo pool: nothing is bought.`
                 : ""))}
         </p>
         {needsWallet && <div id="rips-connect" className="mt-4 flex justify-center"><ConnectButton /></div>}
