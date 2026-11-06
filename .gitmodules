@@ -10,3 +10,6 @@
 [submodule "contracts/lib/base-std"]
 	path = contracts/lib/base-std
 	url = https://github.com/base/base-std
+[submodule "contracts/lib/v4-core"]
+	path = contracts/lib/v4-core
+	url = https://github.com/Uniswap/v4-core
