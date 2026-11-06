@@ -1,0 +1,4 @@
+.env
+node_modules/
+*.wasm
+.cre_build_tmp.js

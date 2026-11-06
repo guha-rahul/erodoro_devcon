@@ -1,0 +1,14 @@
+# Chainlink CRE project for Erodoro Rips. Base mainnet is read for Chainlink's stock feeds; reports land on Base Sepolia.
+staging-settings:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia-base-1
+      url: ${BASE_SEPOLIA_RPC_URL}
+    - chain-name: ethereum-mainnet-base-1
+      url: https://mainnet.base.org
+
+production-settings:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia-base-1
+      url: ${BASE_SEPOLIA_RPC_URL}
+    - chain-name: ethereum-mainnet-base-1
+      url: https://mainnet.base.org
