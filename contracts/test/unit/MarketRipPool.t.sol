@@ -10,6 +10,7 @@ import {TestQuoteToken} from "../../src/periphery/TestQuoteToken.sol";
 import {MockB20Asset} from "../harness/MockB20Asset.sol";
 import {MockOracleAdapter} from "../harness/MockOracleAdapter.sol";
 import {SettlementModel} from "../../src/oracle/SettlementModel.sol";
+import {HumanRegistry} from "../../src/identity/HumanRegistry.sol";
 
 contract MarketRipPoolTest is Test {
     MarketRipPool pool;
@@ -650,6 +651,83 @@ contract MarketRipPoolTest is Test {
         assertEq(pool.upInventoryHash(), hash);
         vm.prank(buyer);
         pool.ripPack(hash);
+    }
+
+    // World ID gate: only verified humans buy, and each human has a cap per batch whichever wallet they use.
+
+    function _gate(uint256 cap) internal returns (HumanRegistry registry) {
+        registry = new HumanRegistry(address(this), address(this), address(0), cap);
+        registry.setPool(address(pool), true);
+        pool.setHumanGate(registry);
+    }
+
+    /// @dev The test contract is the registry's forwarder, standing in for the CRE verify-human workflow.
+    function _verify(HumanRegistry registry, address wallet, uint256 nullifier) internal {
+        registry.onReport("", abi.encode(wallet, nullifier));
+    }
+
+    function test_humanGateRejectsUnverifiedBuyer() public {
+        _gate(0);
+        (uint256 positionId,) = _addUp();
+        _fillOtherNine();
+        MarketRipPool.Position memory p = pool.position(positionId);
+        vm.prank(buyer);
+        vm.expectRevert(abi.encodeWithSelector(HumanRegistry.NotVerified.selector, buyer));
+        pool.buyPosition(positionId, 1, p.unitsPerRip, p.quoteRef);
+    }
+
+    function test_humanCapHoldsAcrossWallets() public {
+        HumanRegistry registry = _gate(2e6);
+        (uint256 positionId,) = _addUp();
+        _fillOtherNine();
+        MarketRipPool.Position memory p = pool.position(positionId);
+        _verify(registry, buyer, 42);
+        vm.prank(buyer);
+        pool.buyPosition(positionId, 2, p.unitsPerRip, p.quoteRef);
+        assertEq(registry.remainingSpend(buyer, address(pool), batchId), 0);
+
+        // The same human verifies a second wallet: access moves to it, but the cap doesn't reset.
+        address second = address(0xB0B2);
+        usdc.mint(second, 5e6);
+        vm.prank(second);
+        usdc.approve(address(pool), type(uint256).max);
+        _verify(registry, second, 42);
+        assertFalse(registry.isVerified(buyer));
+        vm.prank(second);
+        vm.expectRevert(abi.encodeWithSelector(HumanRegistry.HumanCapReached.selector, second, 0));
+        pool.buyPosition(positionId, 1, p.unitsPerRip, p.quoteRef);
+
+        // A different human still has their own allowance.
+        address other = address(0xB0B3);
+        usdc.mint(other, 5e6);
+        vm.prank(other);
+        usdc.approve(address(pool), type(uint256).max);
+        _verify(registry, other, 43);
+        vm.prank(other);
+        pool.buyPosition(positionId, 1, p.unitsPerRip, p.quoteRef);
+    }
+
+    function test_humanGateOnlyCountsRegisteredPools() public {
+        HumanRegistry registry = _gate(0);
+        _verify(registry, buyer, 42);
+        vm.expectRevert(abi.encodeWithSelector(HumanRegistry.NotPool.selector, address(this)));
+        registry.recordPurchase(buyer, batchId, 1e6);
+    }
+
+    function test_bannedHumanCannotVerifyAgain() public {
+        HumanRegistry registry = _gate(0);
+        _verify(registry, buyer, 7);
+        registry.ban(buyer);
+        assertFalse(registry.isVerified(buyer));
+        vm.expectRevert(abi.encodeWithSelector(HumanRegistry.Banned.selector, 7));
+        _verify(registry, address(0xB0B3), 7);
+    }
+
+    function test_onlyErodoroSetsHumanGate() public {
+        HumanRegistry registry = new HumanRegistry(address(this), address(this), address(0), 0);
+        vm.prank(buyer);
+        vm.expectRevert(MarketRipPool.Unauthorized.selector);
+        pool.setHumanGate(registry);
     }
 
     function test_shortBatchesOnlyOnBaseSepolia() public {

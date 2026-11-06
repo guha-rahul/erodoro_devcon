@@ -11,6 +11,7 @@ import {ErodoroVault} from "./ErodoroVault.sol";
 import {Factory} from "./Factory.sol";
 import {IErodoroVault} from "./interfaces/IErodoroVault.sol";
 import {MarketRipPut} from "./MarketRipPut.sol";
+import {IHumanGate} from "./identity/IHumanGate.sol";
 import {SettlementModel} from "./oracle/SettlementModel.sol";
 
 /// @notice Blind $1 sale of real vault N or cash-backed put units.
@@ -94,6 +95,8 @@ contract MarketRipPool is ReentrancyGuard {
     /// @notice While paused no purchase or new listing goes through. Sellers can
     ///         still withdraw and expired inventory can still be returned.
     bool public paused;
+    /// @notice World ID gate. When set, only verified humans can buy, within a per-human cap on each batch.
+    IHumanGate public humanGate;
     uint256 public nextBatchId = 1;
     uint256 public nextPositionId = 1;
     uint256 public activeBatchId;
@@ -123,6 +126,7 @@ contract MarketRipPool is ReentrancyGuard {
     event ListingWithdrawn(uint256 indexed positionId, address indexed seller, uint256 units);
     event QuoterSet(address indexed quoter);
     event Paused(bool paused);
+    event HumanGateSet(address indexed gate);
     event PackPurchased(address indexed buyer, uint256 indexed batchId, uint256 indexed packId, uint256[] positionIds);
 
     error Unauthorized();
@@ -283,6 +287,7 @@ contract MarketRipPool is ReentrancyGuard {
         Position storage p = _positions[positionId];
         if (!_eligible(p)) revert NoInventory();
         if (units == 0 || p.remainingUnits < units) revert NoInventory();
+        if (address(humanGate) != address(0)) humanGate.recordPurchase(msg.sender, p.batchId, cost);
         p.remainingUnits -= units;
         p.amountSold += cost;
         if (!hasBought[positionId][msg.sender]) {
@@ -332,6 +337,11 @@ contract MarketRipPool is ReentrancyGuard {
     function setQuoter(address quoter_) external onlyErodoro {
         quoter = quoter_;
         emit QuoterSet(quoter_);
+    }
+
+    function setHumanGate(IHumanGate gate) external onlyErodoro {
+        humanGate = gate;
+        emit HumanGateSet(address(gate));
     }
 
     /// @notice The quoter can stop sales fast; only `erodoro` resumes them.
