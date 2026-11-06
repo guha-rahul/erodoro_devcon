@@ -1,0 +1,141 @@
+{
+  "status": "deployed-dormant",
+  "note": "No erodoro contract is deployed. The `external` addresses below were each verified against Base mainnet (see docs/base-fork-testing.md for the verification, and the fork suite for the assertions that depend on them). The test suites read these from the environment and contain no fallbacks.",
+  "chainId": 8453,
+  "chain": "base-mainnet",
+  "baseRelease": "Beryl (v1.1.0)",
+  "baseReleaseEvidence": "effectiveAt() and SEIZE_ROLE() both revert on the live token; BURN_BLOCKED_ROLE() answers. Cobalt is not live.",
+  "baseAnvilPin": "base-forge 1.6.0-v1.1.0",
+  "contracts": {
+    "vault": "0x01C4Ca673057a2Ddc64202a31B81F9BF838f4444",
+    "pythAdapter": "0x578FFb7486447E4040A07d6Df957C2826d2e58E9",
+    "factory": "0x7e63b6A2948d317ccA06d7df9437613D5249afC1",
+    "rfq": "0xC01730Bf883Dc0A0E3f2bD7A5f78e72cC54b0951",
+    "intent": null,
+    "umaFallback": null,
+    "faucet": null,
+    "issuerControls": null,
+    "coinbaseFeedStatus": null,
+    "chainlinkTotalReturnAdapter": null
+  },
+  "external": {
+    "pyth": "0x8250f4aF4B972684F7b336503E2D6dFeDeB1487a",
+    "collateral": "0xb200000000000000000000C2e324d24d7eEcd1fb",
+    "collateralSymbol": "AAPLc",
+    "collateralName": "Apple Inc.",
+    "collateralDecimals": 8,
+    "collateralIssuer": "Coinbase, custodied by Alpaca under ADGM",
+    "feedId": "0x49f6b65cb1de6b10eaf75e7c03ca029c306d0357e91b5311b175084a5ad55688",
+    "feedName": "Equity.US.AAPL/USD",
+    "feedExponent": -5
+  },
+  "otherKnownCollateral": {
+    "NVDAc": "0xb20000000000000000000078ee7ce2fE4908108C",
+    "METAc": "0xb2000000000000000000008bC8786B856E61707C"
+  },
+  "liveObservations": {
+    "multiplier": "1e18 (unity, no corporate action applied yet)",
+    "transferPaused": false,
+    "policyIds": "TRANSFER_SENDER / RECEIVER / EXECUTOR / MINT_RECEIVER all point at policy 5",
+    "policy5Behaviour": "authorizes every address probed - an armed but currently-permissive list, not ALWAYS_ALLOW"
+  },
+  "policy": {
+    "priceDecimals": 8,
+    "priceDecimalsNote": "The strike is quoted in THESE units. The live feed publishes at expo -5; the adapter normalises 5 -> 8. A strike quoted in feed-native units understates it by 1000x and the arithmetic will not complain.",
+    "maxConfBps": 500,
+    "observedConfBps": 5.2,
+    "minPriceLag": 600,
+    "maxPriceLag": 21600
+  },
+  "feedVariants": {
+    "note": "Pyth publishes separate ids per session. Settling a series against the regular-session feed is what keeps a 03:00 print out of settlement - the overnight book is a different feed entirely, not a wider band on this one.",
+    "regular": "0x49f6b65cb1de6b10eaf75e7c03ca029c306d0357e91b5311b175084a5ad55688",
+    "overnight": "0x241b9a5ce1c3e4bfc68e377158328628f1b478afaa796c4b1760bd3713c2d2d2",
+    "preMarket": "0x8c320e4cd87c6cef41513aead15db413cf9253211923fef6e87187a7f6688906",
+    "postMarket": "0x5a207c4aa0114baecf852fcd9db9beb8ec715f2db48caa525dbd878fd416fb09"
+  },
+  "statusNote": "Four contracts are deployed and hold code on Base mainnet. No canonical series exists, no settlement configuration is active, and no collateral is locked. This is a recorded deployment, not a launch.",
+  "deployedAt": "2026-09-09",
+  "sourceCommit": "864ebd1",
+  "recordedAt": "2026-09-20",
+  "recordedNote": "Reconstructed from contracts/broadcast/Deploy.s.sol/8453/run-latest.json, which is gitignored and does not survive a clone, then re-read from chain. Before this file was written, every governance surface in the repository stated that nothing was deployed to Base mainnet.",
+  "runtimeCodeHashes": {
+    "vault": "0xd24199500a41dc9a7189b597a06c64b909016eb5278d9ead6d8f2ed8e2d1687d",
+    "pythAdapter": "0x785f6d2bef2ada1b77725963b7a88abda7ba75e45998452b565d4ba57c6626fe",
+    "factory": "0xf42b7044110318fa8641047867ef4557a4fe76ed8b2df0783f2e0391f0418334",
+    "rfq": "0x46b1178be06486683bc3e592531c3a03d18ef44db8c06b4b0f65183ccaf5d542"
+  },
+  "runtimeCodeHashNote": "Read from chain on 2026-09-20. The vault hash is byte-identical to the Base Sepolia vault recorded on 2026-08-25 (the vault has no constructor, so its runtime code is deployment independent). pythAdapter, factory and rfq differ from their Sepolia counterparts only because each embeds deployment-specific immutables; their runtime sizes match exactly. None of the four match a build of the current HEAD: HEAD's vault is 22035 bytes against 21553 deployed, so the vault has changed since this deployment.",
+  "deployment": {
+    "deployer": "0xc0156010072Cf6c8E6d6bc0344c2F4a4aCb96Bc7",
+    "block": 51093013,
+    "transactions": {
+      "vault": "0x6ff6600a0bd788a9788529c4e4af3f0c6103137ce64d5b9bfa4a0ef1d6333093",
+      "pythAdapter": "0xf1a704fda2fbfd9808c26318a0930c74a0697947f570f71680d5c7f7c18b37e7",
+      "factory": "0xd02535f7163ae0ab9d76e7ca51699422a2ecbcd4173f957ac5cb5cc9ddd60162",
+      "rfq": "0x1b02af558ded1cb6077d48adc29f10bf22a28d78664b105e9ad6f325b3944249"
+    },
+    "allReceiptsStatus": "0x1",
+    "script": "contracts/script/Deploy.s.sol",
+    "scriptNote": "Deploy.s.sol has no chain-id guard and reads a raw PRIVATE_KEY. The hardened variant with MAINNET_FACTORY_ADMIN, signer pinning and an admin code-length check exists only on branch feat/erodoro-product-v2 and was never merged."
+  },
+  "admin": {
+    "factoryAdmin": "0x8CC096359ade18A3a5826E48FC4EFaA98789eF53",
+    "kind": "Gnosis Safe v1.4.1",
+    "threshold": 1,
+    "owners": [
+      "0xC0296012Cfbb0e6DF5dA7158B65Dbc46DD9650e0"
+    ],
+    "modules": [],
+    "safeNonce": 0,
+    "note": "A 1-of-1 Safe over a single owner. status.md calls an EOA factory admin a mainnet blocker; this is the same single point of failure in a contract wrapper. The Safe has never executed a transaction (nonce 0)."
+  },
+  "liveFactoryState": {
+    "readAt": "2026-09-20",
+    "creationPaused": false,
+    "seriesCount": 0,
+    "canonicalCount": 0,
+    "activeConfigurationId": {
+      "AAPLc": "0x0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "bounds": {
+      "minHorizon": 604800,
+      "maxHorizon": 31536000,
+      "minSettlementDelay": 60,
+      "maxSettlementDelay": 86400,
+      "minPriceLag": 1,
+      "maxPriceLag": 90000,
+      "maxConfBps": 500,
+      "maxFeeBps": 100,
+      "priceDecimals": 8
+    },
+    "boundsNote": "The deployed minPriceLag/maxPriceLag of 1/90000 seconds is far wider than the policy recorded under `policy` in this file (600/21600). A canonical mainnet series could be created with a one-second or twenty-five-hour price window and the factory would accept it."
+  },
+  "preflight": {
+    "runAt": "2026-09-20",
+    "command": "BASE_VAULT=0x01c4ca67... BASE_PRICE_DECIMALS=8 BASE_FEED_EXPO_ABS=5 make preflight",
+    "collateral": "0xb200000000000000000000C2e324d24d7eEcd1fb",
+    "fails": 0,
+    "warns": 7,
+    "vaultAuthorizedUnderTransferPolicies": true,
+    "note": "First run against the live deployed vault. TRANSFER is live, the multiplier is unity, and the vault is currently authorized under TRANSFER_SENDER/RECEIVER/EXECUTOR policy 5 - so split, merge and redeem would work today. All three policies are ARMED, meaning that authorization can be revoked by the issuer at any time."
+  },
+  "evidenceBoundary": {
+    "proven": [
+      "Four contracts hold code at the recorded addresses on Base mainnet.",
+      "All four deploy receipts have status 0x1 in block 51093013.",
+      "The live vault is authorized under all three B20 transfer-policy scopes as of 2026-09-20.",
+      "All four Coinbase Chainlink feeds return their expected description()."
+    ],
+    "notProven": [
+      "This is not an external audit. No security review of any kind has been published.",
+      "The source is not verified on any block explorer.",
+      "No canonical series exists and no settlement configuration is active.",
+      "No collateral has ever been locked; no mainnet expiry has ever settled.",
+      "Administration is a single key, not a reviewed multisig policy.",
+      "No mainnet UMA fallback oracle is deployed, and DeployUmaFallback.s.sol refuses any chain but Base Sepolia.",
+      "There is no script that can list a canonical series on mainnet; ListSeries.s.sol refuses chain 8453.",
+      "Pyth settlement is currently unreachable: public Hermes returns 401 and the configured key returns 403 'not entitled' for every feed."
+    ]
+  }
+}
