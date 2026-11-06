@@ -1,0 +1,60 @@
+
+> app@0.1.0 build /Users/rahul/work/stellar/erodoro-base/app
+> next build --webpack
+
+▲ Next.js 16.3.2 (webpack)
+- Environments: .env.local
+✓ Running next.config.ts took 44ms
+
+  Creating an optimized production build ...
+⚠ Compiled with warnings in 4.7s
+
+./node_modules/.pnpm/ox@0.14.34_typescript@5.9.3_zod@3.25.76/node_modules/ox/_esm/tempo/internal/virtualMasterPool.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/.pnpm/ox@0.14.34_typescript@5.9.3_zod@3.25.76/node_modules/ox/_esm/tempo/internal/virtualMasterPool.js
+./node_modules/.pnpm/ox@0.14.34_typescript@5.9.3_zod@3.25.76/node_modules/ox/_esm/tempo/VirtualMaster.js
+./node_modules/.pnpm/ox@0.14.34_typescript@5.9.3_zod@3.25.76/node_modules/ox/_esm/tempo/index.js
+./node_modules/.pnpm/viem@2.55.19_typescript@5.9.3_zod@3.25.76/node_modules/viem/_esm/tempo/chainConfig.js
+./node_modules/.pnpm/viem@2.55.19_typescript@5.9.3_zod@3.25.76/node_modules/viem/_esm/chains/definitions/tempo.js
+./node_modules/.pnpm/viem@2.55.19_typescript@5.9.3_zod@3.25.76/node_modules/viem/_esm/chains/index.js
+./lib/chain.ts
+./app/app/[id]/page.tsx
+
+  Running TypeScript ...
+  Finished TypeScript in 2.9s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/21) ...
+  Generating static pages using 7 workers (5/21)
+  Generating static pages using 7 workers (10/21)
+  Generating static pages using 7 workers (15/21)
+✓ Generating static pages using 7 workers (21/21) in 527ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /app
+├   /app/[id]
+│ ├ ● /app/2c751c04dad65b1cfc72ad52b46bb684ca1f6f39fdf84253a5938edcc8323f4a
+│ ├ ● /app/b53e6c8d5eb051aac5103719fcea59b3a396aadd988c26139a8c7b6c082c5a32
+│ ├ ● /app/bd5bccac50f804f63eb68e09698bf8feedfbc3a71ad74aaf72eb831544aba204
+│ └ ● /app/fbebef1bd4251ca22b472d5500d76bc2c7200a50b6221dbfa45d62f7e1497244
+├ ○ /auctions
+├ ○ /buy
+├ ○ /create
+├ ○ /earn
+├ ○ /faucet
+├ ○ /market-rip
+├ ○ /portfolio
+├ ○ /rewards
+├ ○ /rips
+├ ○ /rips/position
+├ ○ /sell
+└ ○ /swap
+
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)

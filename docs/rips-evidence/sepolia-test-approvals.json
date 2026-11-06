@@ -1,0 +1,24 @@
+[
+  {
+    "eventName": "Approval",
+    "args": {
+      "owner": "0x9757724C3EcDC93479a039Eb062F5111f0B66aa5",
+      "spender": "0xEdA960663c1b38F5Ab172b75B472fA82C48A92C7",
+      "value": "1000000"
+    },
+    "address": "0xbd85b60da2b9b667eb215e0f050047dbbfc46b13",
+    "topics": [
+      "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925",
+      "0x0000000000000000000000009757724c3ecdc93479a039eb062f5111f0b66aa5",
+      "0x000000000000000000000000eda960663c1b38f5ab172b75b472fa82c48a92c7"
+    ],
+    "data": "0x00000000000000000000000000000000000000000000000000000000000f4240",
+    "blockHash": "0xfdb06ecc217e6eb4fb5b0b83341f0c3eb526cd60b9bbb27b9769a80f796b82c9",
+    "blockNumber": "47853331",
+    "blockTimestamp": "1791474950",
+    "transactionHash": "0x0213fe4fd86c52ba05bd1a1a0f3474cd40fe8903946abd35bc5d303e0934718c",
+    "transactionIndex": 60,
+    "logIndex": 164,
+    "removed": false
+  }
+]

@@ -1,0 +1,5 @@
+
+> app@0.1.0 check:export /Users/rahul/work/stellar/erodoro-base/app
+> node scripts/check-export.mjs
+
+Static export smoke check passed: 13 fixed routes and 4 market route.

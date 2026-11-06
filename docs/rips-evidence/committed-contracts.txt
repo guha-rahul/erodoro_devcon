@@ -1,0 +1,48 @@
+Warning: Found unknown `base` config for profile `base` defined in foundry.toml.
+Warning: Found unknown `base` config for profile `fork` defined in foundry.toml.
+Compiling 87 files with Solc 0.8.28
+Solc 0.8.28 finished in 10.72s
+Compiler run successful!
+
+Ran 8 tests for test/unit/MarketRipPool.t.sol:MarketRipPoolTest
+[PASS] test_batchNeedsTenPositionsBeforeActivation() (gas: 1175815)
+[PASS] test_buyerCanRedeemPurchasedDownClaimAfterSettlement() (gas: 20034525)
+[PASS] test_buyerCanRedeemPurchasedUpClaimAfterSettlement() (gas: 20704470)
+[PASS] test_fiveRipsCannotOversellFundedPut() (gas: 20063460)
+[PASS] test_oneDollarAtomicPurchaseOfRealUpClaim() (gas: 20390675)
+[PASS] test_rejectsUnbackedPutInventory() (gas: 212758)
+[PASS] test_repricedInventoryStillCannotOversell() (gas: 20005246)
+[PASS] test_unsoldClaimReturnsToHouseAfterExpiry() (gas: 755122)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 16.13ms (21.75ms CPU time)
+
+Ran 18 tests for test/unit/MarketRipsExperience.t.sol:MarketRipsExperienceTest
+[PASS] test_batchNeedsTenPositionsBeforeActivation() (gas: 1175882)
+[PASS] test_buyerCanRedeemPurchasedDownClaimAfterSettlement() (gas: 20034525)
+[PASS] test_buyerCanRedeemPurchasedUpClaimAfterSettlement() (gas: 20704514)
+[PASS] test_claimTransferDoesNotChangeLifetimeCost() (gas: 20350897)
+[PASS] test_competingBuyerInvalidatesBlindInventoryReview() (gas: 20363364)
+[PASS] test_directedBuyRefusesDownClaimsAndInactiveBatch() (gas: 19719331)
+[PASS] test_directedFiveDollarBuyTransfersExactlyReviewedQuantity() (gas: 20308857)
+[PASS] test_directedTwentyDollarBuyDoesNotPartiallyFill() (gas: 20159777)
+[PASS] test_directedTwentyDollarBuyWithEnoughInventory() (gas: 20349639)
+[PASS] test_expiredQuoteDisablesPurchases() (gas: 20141641)
+[PASS] test_fiveRipsCannotOversellFundedPut() (gas: 20063485)
+[PASS] test_insufficientFundsRollsBackInventoryAndBuyerIndex() (gas: 20347268)
+[PASS] test_oneDollarAtomicPurchaseOfRealUpClaim() (gas: 20390687)
+[PASS] test_refreshedQuoteRequiresNewReview() (gas: 20175982)
+[PASS] test_rejectsUnbackedPutInventory() (gas: 212736)
+[PASS] test_repricedInventoryStillCannotOversell() (gas: 20005312)
+[PASS] test_unsoldClaimReturnsToHouseAfterExpiry() (gas: 755112)
+[PASS] test_upsideRipNeverPurchasesDownside() (gas: 20394250)
+Suite result: ok. 18 passed; 0 failed; 0 skipped; finished in 17.02ms (38.31ms CPU time)
+
+Ran 6 tests for test/unit/MarketRipPut.t.sol:MarketRipPutTest
+[PASS] testFuzz_fractionalClaimsStaySolvent(uint96,uint96,uint96) (runs: 1024, μ: 308182, ~: 315140)
+[PASS] test_cannotMintUnfundedOrAfterMaturity() (gas: 53923)
+[PASS] test_expiresWorthlessAboveStrike() (gas: 233602)
+[PASS] test_fullyCollateralizedDownsideAndFractionalRedemption() (gas: 321114)
+[PASS] test_mainnetRejectsNonCanonicalUsdc() (gas: 86507)
+[PASS] test_requiresTotalReturnOracle() (gas: 323465)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 413.49ms (414.23ms CPU time)
+
+Ran 3 test suites in 430.15ms (446.64ms CPU time): 32 tests passed, 0 failed, 0 skipped (32 total tests)

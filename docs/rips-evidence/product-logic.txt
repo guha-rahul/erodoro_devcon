@@ -1,0 +1,59 @@
+
+> app@0.1.0 check:product-logic /Users/rahul/work/stellar/erodoro-base/app
+> node scripts/check-market-freshness.mjs && node scripts/check-quote-matches.mjs && node scripts/check-rfq-sale.mjs && node scripts/check-megapot.mjs && node scripts/check-account-batching.mjs && node scripts/check-eip3009.mjs && node scripts/check-builder-code.mjs && node scripts/check-finality.mjs && node scripts/check-pending-intent.mjs && node scripts/check-chainlink.mjs && node --test scripts/index-rfq.test.mjs ../cloudflare/reward-accounting.test.mjs ../cloudflare/reward-replay.test.mjs ../cloudflare/loyalty-accounting.test.mjs && node --test scripts/check-rips.mjs
+
+Market freshness checks passed: aging, future timestamps, confidence, zero prices, refresh failures, feed model, expired bids.
+Corporate-action display checks passed: ceiling rounding, strike distance, missing multiplier, frozen settlement.
+Quote matching checks passed: public/wallet quotes, request changes, expiry, malformed data, maturity.
+RFQ sale checks passed: approval recheck, expired quote, reverted approval/fill, network change, EIP-5792 batching, successful fill.
+Megapot checks passed: address table, premium->tickets math, approve-when-short, mainnet guard, reverted approve/buy.
+Base Account batching checks passed: EIP-5792 capability parsing, safe fallback on unsupported/erroring capabilities, forced-atomic batch send, failure reporting, and Base Account-only spend permissions.
+EIP-3009 signing checks passed: fresh 32-byte nonces, bounded validity window, exact USDC ReceiveWithAuthorization domain/message, parsed v/r/s, and rejection propagation.
+Builder Code checks passed: code validation, decodable ERC-8021 suffix, and no suffix when unconfigured.
+Finality checks passed: submitted→preconfirmed→included→confirmed→finalized from canonical blocks, terminal reverts, and no stage that permits a double submit.
+Pending-intent checks passed: signed terms persist before broadcast, another account cannot see them, registration is idempotent, and escrowed records offer both retry and on-chain recovery.
+Chainlink round-discovery checks passed: same-phase search, exact-maturity round, phase-boundary refusal, not-yet-published, window overflow.
+✔ distinct completed expiries advance milestones (0.918958ms)
+✔ a missed elapsed expiry resets the current streak without deleting history (0.094708ms)
+✔ future expiries neither advance nor break a streak (0.066208ms)
+✔ unknown expiry and invalid policy inputs fail (0.215167ms)
+✔ ownership time follows transfers and conserves total unit-seconds (2.231125ms)
+✔ same-block mint and burn accrue no time (0.50175ms)
+✔ duplicate and self transfers cannot inflate time (0.153083ms)
+✔ missing history, conflicting logs, and out-of-window inputs fail (1.100916ms)
+✔ weights use exact integer arithmetic without implicit economics (0.134833ms)
+✔ fill inputs exclude self-fills, deduplicate, and retain token and role attribution (8.434375ms)
+✔ snapshot replay preserves exact arithmetic and provenance (11.443209ms)
+✔ replay rejects imprecise inputs and invalid coverage (1.196333ms)
+✔ optional loyalty has explicit policy and observation coverage (0.965417ms)
+✔ bounded scan resumes without recounting previous fills (0.937125ms)
+✔ rejects wrong chain, mismatched scope, and changed checkpoints (0.440292ms)
+✔ rejects a log whose block hash no longer matches (0.114416ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 173.969917
+✔ demo fills merge actual simulated spend and stay separate from wallet claims (0.501209ms)
+✔ demo selection excludes unavailable inventory (0.09075ms)
+✔ only the successful pool receipt for this buyer and exact payment is a purchase (2.3025ms)
+✔ inventory commitments exclude downside, stale quotes and dust and bind repricing (0.503709ms)
+✔ share data rejects tampering and labels demo and testnet purchases (0.49425ms)
+✔ signing rejection, quote races, empty liquidity and uncertainty have recoverable errors (0.218875ms)
+✔ live totals use on-chain lifetime cost and current holdings after transfers (0.061792ms)
+✔ concurrent history refreshes scan once and recover actual receipt cost and mode (9.305792ms)
+✔ a pool read on another chain fails before token approval or liquidity reads (20.703167ms)
+✔ quote expiry removes buying availability while preserving readable position metadata (16.880375ms)
+✔ purchase history stays within the public RPC 200-block log limit and resumes without rescanning (5.94475ms)
+✔ a transient RPC failure retains verified holdings and disables stale purchase quotes (40.295208ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 655.944625

@@ -1,0 +1,111 @@
+{
+  "observedAt": "2026-10-08T15:55:09.588Z",
+  "chainId": 84532,
+  "pool": "0xeda960663c1b38f5ab172b75b472fa82c48a92c7",
+  "activeBatch": "1",
+  "buyer": "0x9757724C3EcDC93479a039Eb062F5111f0B66aa5",
+  "buyerTestUSDC": "511000000",
+  "operatorTestETH": "0.009689151261919879",
+  "positions": [
+    {
+      "id": "1",
+      "stock": "0xF3f8f10e2f9D1F24B33AE8640AE3a1D6cD532A56",
+      "claimId": "22264704344259094312314553912971978013021357158691513574171583754675492057395",
+      "direction": 0,
+      "remainingUnits": "500000000",
+      "unitsPerRip": "10000000",
+      "quoteValidUntil": "1791474916",
+      "buyerCost": "0"
+    },
+    {
+      "id": "2",
+      "stock": "0xB7A38e665f18C5f689F8C08576688F575f96687F",
+      "claimId": "8249627144687694068650623657243886287358080457544283922666132449401673918239",
+      "direction": 0,
+      "remainingUnits": "500000000",
+      "unitsPerRip": "10000000",
+      "quoteValidUntil": "1791474916",
+      "buyerCost": "0"
+    },
+    {
+      "id": "3",
+      "stock": "0x664559F7A0220AA80BA349084B5C90cD1c7EE8C4",
+      "claimId": "3251750278805946770337631282852029978526875990413500215540473074042550571121",
+      "direction": 0,
+      "remainingUnits": "500000000",
+      "unitsPerRip": "10000000",
+      "quoteValidUntil": "1791474916",
+      "buyerCost": "0"
+    },
+    {
+      "id": "4",
+      "stock": "0x1757C6CD9c76FA4794649B2b32D6E76cA350b4D7",
+      "claimId": "6431372220407328374498019430224680321865736568448832136070257858566118562069",
+      "direction": 0,
+      "remainingUnits": "500000000",
+      "unitsPerRip": "10000000",
+      "quoteValidUntil": "1791474916",
+      "buyerCost": "0"
+    },
+    {
+      "id": "5",
+      "stock": "0xcE87A05fc2Ce39277ECfbf8cD8ff2D3d3a9277e5",
+      "claimId": "33687758232452426571809572199671912381352450447237113206702378994279435679367",
+      "direction": 0,
+      "remainingUnits": "500000000",
+      "unitsPerRip": "10000000",
+      "quoteValidUntil": "1791474916",
+      "buyerCost": "0"
+    },
+    {
+      "id": "6",
+      "stock": "0x003EefedAbE0Bf5D55C7682be76728F38d7EFa19",
+      "claimId": "114006406799879375369726393376863109935036643270249825758288784819010102307265",
+      "direction": 0,
+      "remainingUnits": "500000000",
+      "unitsPerRip": "10000000",
+      "quoteValidUntil": "1791474916",
+      "buyerCost": "0"
+    },
+    {
+      "id": "7",
+      "stock": "0x9910f85F7A3F66109a7aC8180dcdE9FdcF760920",
+      "claimId": "9203524060269172107784107612038452991324170549648589671219374264790058485437",
+      "direction": 0,
+      "remainingUnits": "500000000",
+      "unitsPerRip": "10000000",
+      "quoteValidUntil": "1791474916",
+      "buyerCost": "0"
+    },
+    {
+      "id": "8",
+      "stock": "0xAb465E247721528b1b1647dec1a1983d951F2390",
+      "claimId": "51011437335557345035832252750400494338409013837528733365853666727612460647989",
+      "direction": 0,
+      "remainingUnits": "500000000",
+      "unitsPerRip": "10000000",
+      "quoteValidUntil": "1791474916",
+      "buyerCost": "0"
+    },
+    {
+      "id": "9",
+      "stock": "0xb880c418De187f97A18a0c006529581314A74702",
+      "claimId": "41638933920240214948678257586906431817853467839544471239819725252719615632259",
+      "direction": 0,
+      "remainingUnits": "500000000",
+      "unitsPerRip": "10000000",
+      "quoteValidUntil": "1791474916",
+      "buyerCost": "0"
+    },
+    {
+      "id": "10",
+      "stock": "0x45C30DB7102A167b02Ce3b9186E9696CC04322B0",
+      "claimId": "63091971204831010224966814940495450357741143740410857552151781429729822181215",
+      "direction": 0,
+      "remainingUnits": "500000000",
+      "unitsPerRip": "10000000",
+      "quoteValidUntil": "1791474916",
+      "buyerCost": "0"
+    }
+  ]
+}

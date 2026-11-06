@@ -1,0 +1,24 @@
+
+> app@0.1.0 check:rips /Users/rahul/work/stellar/erodoro-base/app
+> node --test scripts/check-rips.mjs
+
+✔ demo fills merge actual simulated spend and stay separate from wallet claims (1.999833ms)
+✔ demo selection excludes unavailable inventory (0.254333ms)
+✔ only the successful pool receipt for this buyer and exact payment is a purchase (8.353417ms)
+✔ inventory commitments exclude downside, stale quotes and dust and bind repricing (3.261459ms)
+✔ share data rejects tampering and labels demo and testnet purchases (0.893833ms)
+✔ signing rejection, quote races, empty liquidity and uncertainty have recoverable errors (0.495ms)
+✔ live totals use on-chain lifetime cost and current holdings after transfers (0.258459ms)
+✔ concurrent history refreshes scan once and recover actual receipt cost and mode (31.161208ms)
+✔ a pool read on another chain fails before token approval or liquidity reads (30.484333ms)
+✔ quote expiry removes buying availability while preserving readable position metadata (30.857166ms)
+✔ purchase history stays within the public RPC 200-block log limit and resumes without rescanning (11.079166ms)
+✔ a transient RPC failure retains verified holdings and disables stale purchase quotes (65.518167ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2194.586208

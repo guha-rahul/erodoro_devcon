@@ -1,0 +1,50 @@
+
+> app@0.1.0 check:responsive /Users/rahul/work/stellar/erodoro-base/app
+> node scripts/check-responsive.mjs
+
+/       375px  document 375px  Make your stocks earn.
+/earn   375px  document 375px  Earn premium on your stocks
+/app    375px  document 375px  Choose where to sell your upside
+/auctions  375px  document 375px  Live auctions
+/portfolio  375px  document 375px  Your portfolio
+/rewards  375px  document 375px  Rewards
+/market-rip  375px  document 375px  $1. Pull a move.
+/rips   375px  document 375px  My Rips
+/rips/position  375px  document 375px  This Rip isn’t here
+/       390px  document 390px  Make your stocks earn.
+/earn   390px  document 390px  Earn premium on your stocks
+/app    390px  document 390px  Choose where to sell your upside
+/auctions  390px  document 390px  Live auctions
+/portfolio  390px  document 390px  Your portfolio
+/rewards  390px  document 390px  Rewards
+/market-rip  390px  document 390px  $1. Pull a move.
+/rips   390px  document 390px  My Rips
+/rips/position  390px  document 390px  This Rip isn’t here
+/       430px  document 430px  Make your stocks earn.
+/earn   430px  document 430px  Earn premium on your stocks
+/app    430px  document 430px  Choose where to sell your upside
+/auctions  430px  document 430px  Live auctions
+/portfolio  430px  document 430px  Your portfolio
+/rewards  430px  document 430px  Rewards
+/market-rip  430px  document 430px  $1. Pull a move.
+/rips   430px  document 430px  My Rips
+/rips/position  430px  document 430px  This Rip isn’t here
+/       768px  document 768px  Make your stocks earn.
+/earn   768px  document 768px  Earn premium on your stocks
+/app    768px  document 768px  Choose where to sell your upside
+/auctions  768px  document 768px  Live auctions
+/portfolio  768px  document 768px  Your portfolio
+/rewards  768px  document 768px  Rewards
+/market-rip  768px  document 768px  $1. Pull a move.
+/rips   768px  document 768px  My Rips
+/rips/position  768px  document 768px  This Rip isn’t here
+/      1440px  document 1440px  Make your stocks earn.
+/earn  1440px  document 1440px  Earn premium on your stocks
+/app   1440px  document 1440px  Choose where to sell your upside
+/auctions 1440px  document 1440px  Live auctions
+/portfolio 1440px  document 1440px  Your portfolio
+/rewards 1440px  document 1440px  Rewards
+/market-rip 1440px  document 1440px  $1. Pull a move.
+/rips  1440px  document 1440px  My Rips
+/rips/position 1440px  document 1440px  This Rip isn’t here
+Responsive check passed: 9 routes at 5 widths.

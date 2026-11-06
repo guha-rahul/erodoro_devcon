@@ -1,0 +1,29 @@
+
+> app@0.1.0 check:auction-purchase /Users/rahul/work/stellar/erodoro-base/app
+> node scripts/check-auction-purchase.cjs
+
+node:internal/modules/cjs/loader:1424
+  throw err;
+  ^
+
+Error: Cannot find module './pending-intent'
+Require stack:
+- /Users/rahul/work/stellar/erodoro-base/app/scripts/check-auction-purchase.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1421:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1059:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1064:22)
+    at Module._load (node:internal/modules/cjs/loader:1227:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1504:12)
+    at require (node:internal/modules/helpers:152:16)
+    at require (/Users/rahul/work/stellar/erodoro-base/app/scripts/check-auction-purchase.cjs:23:81)
+    at evalmachine.<anonymous>:19:26 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/rahul/work/stellar/erodoro-base/app/scripts/check-auction-purchase.cjs'
+  ]
+}
+
+Node.js v24.12.0
+ ELIFECYCLE  Command failed with exit code 1.

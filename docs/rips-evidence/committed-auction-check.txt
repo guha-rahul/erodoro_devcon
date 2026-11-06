@@ -1,0 +1,5 @@
+
+> app@0.1.0 check:auction-purchase /private/tmp/erodoro-rips-committed-check/app
+> node scripts/check-auction-purchase.cjs
+
+Auction checks passed: no buy-now path, reserve validation, full/partial bids, bid lifetime, winner settlement, approval failures, receipt and observer copy.

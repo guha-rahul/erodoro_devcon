@@ -1,0 +1,31 @@
+{
+  "sourceRepository": "Erodoro_Stocklana",
+  "sourceBranch": "rips",
+  "sourceCommit": "ce82ace4f5f63139a9f48915907c3a2ab73d1d44",
+  "sourceCommitDate": "2026-10-03T15:31:09+05:30",
+  "sourceDirtyFiles": [
+    " M web/components/rips/my-rips.tsx",
+    " M web/components/rips/rip-flow.tsx",
+    " M web/components/rips/rips-home.tsx",
+    " M web/components/rips/rips-shell.tsx",
+    " M web/components/rips/share-card.tsx"
+  ],
+  "destinationBaseCommit": "6a09954b9aab4e3a17f444cd354df0a8a93770e1",
+  "sourceWorkingTreeSHA256": {
+    "web/components/rips/rips-home.tsx": "6032085d9c3e4a6ce6f17b1ea115f0df09a0e04eab97077fe19c142a4f287f0e",
+    "web/components/rips/bits.tsx": "78280663862f7b7454ff117edcd1592e067983c81020a8e7e4d9a50a8a68179f",
+    "web/components/rips/rips-shell.tsx": "862b87d9e9a2c402de0a3714f99938b69759de1a74ddcbd5abd6139a9f77a8eb",
+    "web/components/rips/rip-flow.tsx": "99343de5dfd5a16b4aab2ee0fe8a2fdb4949b80e40bf91c32fb8c6a4141e462b",
+    "web/components/rips/my-rips.tsx": "aad1c36f8ce2c7d9c4dd46e42eba2e8a44e1b3eb9e48935ce492e34d9e8fd00a",
+    "web/components/rips/rip-detail.tsx": "031787d9dd015247640cf7a0e48243bd62e90867f60bfc8206c26e46be448244",
+    "web/components/rips/rip-card.tsx": "8e7d37bb138001b4e79f18913bc8debbb3258d3ed99c032ea624ff256fb9a733",
+    "web/components/rips/share-card.tsx": "286ec62472e987c324be34a68db4dea035f0d448380d4fc798682971b063023d",
+    "web/lib/rips/history.ts": "28040fd1aaba2f717b12f8d0b9be87ab55f95027c6f73fdb001e611205768d33",
+    "web/lib/rips/demo.ts": "b95c4375ab3b140af4f23a591b08afa52026056b607fea45902cf490ded31d73",
+    "web/lib/rips/live.ts": "458144e5bf8f9c8a0f1bd7909d84c02877e6f138236437ddba52d5f83d58818f",
+    "web/lib/rips/model.ts": "b3b7659922a193f49325e924ec404056caf5aa58c4a2689730c76c64e82c228a",
+    "web/lib/rips/use-rips.ts": "50e77c7ffbe14b65930249795d0c0f830ea34016d9a8d79c819dfd48fdc2103b",
+    "web/lib/rips/store.ts": "cdb86040f22cd85b445b3d341847cacc4e1b2fc72c7dfc9d162ebd4ba8aa22fc",
+    "web/app/globals.css": "d4f7299e28382dc9f7a43d7fe9e3c28822076029fc93cbc15fc181f5467ef380"
+  }
+}

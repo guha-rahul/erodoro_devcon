@@ -1,0 +1,5 @@
+
+> app@0.1.0 check:portfolio-balances /Users/rahul/work/stellar/erodoro-base/app
+> node scripts/check-portfolio-balances.mjs
+
+Portfolio balance checks passed: deployment chain, partial failure, incomplete response, RPC error, loading, and true zero balances.

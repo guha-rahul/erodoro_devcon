@@ -1,0 +1,27 @@
+{
+  "observedAt": "2026-10-08T18:06:31.688Z",
+  "chainId": 84532,
+  "mockEconomics": true,
+  "transactionHash": "0x4ab5820f4571a47c4ca087ca8f8d318a419f48f7a346ad5a355b7d69141621bd",
+  "receiptStatus": "success",
+  "blockNumber": "47857134",
+  "blockTimestamp": "1791482556",
+  "pool": "0xeda960663c1b38f5ab172b75b472fa82c48a92c7",
+  "buyer": "0x9757724C3EcDC93479a039Eb062F5111f0B66aa5",
+  "event": {
+    "buyer": "0x9757724C3EcDC93479a039Eb062F5111f0B66aa5",
+    "batchId": "1",
+    "positionId": "3",
+    "claims": "0xAbEc6909665653dAC28c700CE9e536b3338f0461",
+    "claimId": "3251750278805946770337631282852029978526875990413500215540473074042550571121",
+    "units": "10000000",
+    "usdcPaid": "1000000",
+    "quoteRef": "0x7f32d8881526a0b37c34224bfd80b7f50ec6c65d5140956d5f2236eb7a146fc6"
+  },
+  "lifetimeCostRaw": "1000000",
+  "purchasedUnitsRaw": "10000000",
+  "heldUnitsRaw": "10000000",
+  "claimDecimals": 8,
+  "remainingInventoryUnits": "490000000",
+  "buyerTestUSDCRaw": "510000000"
+}
