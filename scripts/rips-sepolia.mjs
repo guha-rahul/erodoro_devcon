@@ -30,8 +30,18 @@ async function receipt(hash) {
   if (r.status !== "success") throw new Error(`Transaction reverted: ${hash}`);
   return r;
 }
+/** A long-running quote keeper may share this key, so a send can lose a nonce race; retry with a fresh nonce. */
+async function retryNonce(submit) {
+  for (let attempt = 1; ; attempt++) {
+    try { return await submit(); }
+    catch (e) {
+      if (attempt >= 5 || !/nonce too low|replacement transaction underpriced|already known/i.test(e.details ?? e.message)) throw e;
+      await new Promise(r => setTimeout(r, 3000));
+    }
+  }
+}
 async function send(address, abi, functionName, args = []) {
-  const hash = await wallet.writeContract({ address, abi, functionName, args });
+  const hash = await retryNonce(() => wallet.writeContract({ address, abi, functionName, args }));
   await receipt(hash); return hash;
 }
 if (mode === "balance") {
@@ -89,7 +99,7 @@ if (mode === "balance") {
   m.transactions ??= {}; m.quoteUnits ??= {};
   const save = () => writeFile(manifestFile, JSON.stringify(m, null, 2));
   async function once(key, submit) {
-    const hash = m.transactions[key] ?? await submit();
+    const hash = m.transactions[key] ?? await retryNonce(submit);
     m.transactions[key] = hash; await save();
     return receipt(hash);
   }
@@ -103,7 +113,12 @@ if (mode === "balance") {
   const tag = `ref${m.refBatch.n}`;
   const batchId = m.refBatch.batchId ? BigInt(m.refBatch.batchId) : await client.readContract({ address: pool, abi: poolArtifact.abi, functionName: "nextBatchId" });
   m.refBatch.batchId = batchId.toString(); await save();
-  const batchExpiry = marketExpiry(Number((await client.getBlock()).timestamp), Number(process.env.RIP_TEST_DAYS ?? 30));
+  // RIP_TEST_EXPIRY_MINUTES: a short Base Sepolia batch (the pool allows one hour or more there), so a full
+  // sell, settle and redeem cycle can run in a day. Chainlink's stock feeds update 24/5, so any weekday time works.
+  const nowSec = Number((await client.getBlock()).timestamp);
+  const batchExpiry = process.env.RIP_TEST_EXPIRY_MINUTES
+    ? BigInt(nowSec + Number(process.env.RIP_TEST_EXPIRY_MINUTES) * 60)
+    : marketExpiry(nowSec, Number(process.env.RIP_TEST_DAYS ?? 30));
   await once(`${tag}:createBatch`, () => wallet.writeContract({ address: pool, abi: poolArtifact.abi, functionName: "createBatch", args: [batchExpiry] }));
   const expiry = await client.readContract({ address: pool, abi: poolArtifact.abi, functionName: "batchExpiry", args: [batchId] });
   const years = Number(expiry - (await client.getBlock()).timestamp) / (365 * 86400);
@@ -126,9 +141,11 @@ if (mode === "balance") {
     const unitsPerRip = BigInt(m.refBatch[`${ticker}:unitsPerRip`] ?? Math.floor(1e8 / premium));
     m.refBatch[`${ticker}:unitsPerRip`] = unitsPerRip.toString(); await save();
     const inventory = unitsPerRip * 5n;
-    const feedId = keccak256(toHex(`RIPS-REF-${tag}-${ticker}`));
+    // With the CRE settlement oracle, a feed ID names the Chainlink feed itself, so the CRE workflow's
+    // configuration doesn't change between batches.
+    const feedId = keccak256(toHex(m.creFeedIds ? `chainlink:${ticker}/USD` : `RIPS-REF-${tag}-${ticker}`));
     await once(`${k}:configuration`, () => wallet.writeContract({ address: m.factory, abi: fa, functionName: "setSettlementConfiguration", args: [{ collateral: token, oracle: m.oracle, fallbackOracle: "0x0000000000000000000000000000000000000000", feedId, settlementModel: 1, fallbackDelay: 0, priceDecimals: 8 }] }));
-    const params = { collateral: token, oracle: m.oracle, fallbackOracle: "0x0000000000000000000000000000000000000000", feeRecipient: account.address, feedId, fallbackRequestId: `0x${"00".repeat(32)}`, settlementModel: 1, strike: strikeRaw, minSplitAmount: 0n, maturity: expiry, settlementDelay: 60n, maxPriceLag: 3600n, fallbackDelay: 0n, maxConfBps: 0, feeBps: 0, priceDecimals: 8, admin: account.address };
+    const params = { collateral: token, oracle: m.oracle, fallbackOracle: "0x0000000000000000000000000000000000000000", feeRecipient: account.address, feedId, fallbackRequestId: `0x${"00".repeat(32)}`, settlementModel: 1, strike: strikeRaw, minSplitAmount: 0n, maturity: expiry, settlementDelay: 60n, maxPriceLag: BigInt(process.env.RIP_TEST_PRICE_LAG ?? 3600), fallbackDelay: 0n, maxConfBps: 0, feeBps: 0, priceDecimals: 8, admin: account.address };
     const seriesId = await client.readContract({ address: m.vault, abi: va, functionName: "seriesIdFor", args: [m.factory, params] });
     await once(`${k}:series`, () => wallet.writeContract({ address: m.factory, abi: fa, functionName: "createSeries", args: [params, account.address] }));
     await once(`${k}:mint`, () => wallet.writeContract({ address: token, abi: tokenArtifact.abi, functionName: "mint", args: [account.address, inventory] }));
