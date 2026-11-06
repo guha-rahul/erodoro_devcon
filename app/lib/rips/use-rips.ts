@@ -14,6 +14,7 @@ import { useDemoConsumed, useStoredPositions, positionsKey } from "./store";
 import { byClaim, heldPosition, loadSnapshot, lotFor, poolHouse, selectLiveLots, validatePool, type Snapshot } from "./live";
 import { purchaseError, decodePack, decodePurchase, inventoryCommitment, packsAvailable } from "./purchase";
 import { RIPS_SHOW_DEMO } from "./ui";
+import { humanGateRefusal } from "./human-gate";
 import { prefetchStockPrices, stockPrice, type StockPrice } from "./prices";
 
 export type Mark = { value: number | null; spot: number | null; marked: "model" | "quote" | "settlement" | "unavailable" };
@@ -214,6 +215,8 @@ export function useRipsState() {
       };
       const funds = await publicClient.readContract({ address: quote.token, abi: erc20Abi, functionName: "balanceOf", args: [address] });
       if (funds < paidRaw) throw new Error(`Insufficient ${quote.symbol}. You need ${budget} ${quote.symbol} plus ${IS_TESTNET ? "testnet ETH" : "ETH"} for gas.`);
+      const refusal = await humanGateRefusal(pool, address, paidRaw);
+      if (refusal) throw new Error(refusal);
       const allowance = await publicClient.readContract({ address: quote.token, abi: erc20Abi, functionName: "allowance", args: [address, pool] });
       if (allowance < paidRaw) {
         assertWallet(); setPhase("Approve the payment token in your wallet");
@@ -331,6 +334,8 @@ export function useRipsState() {
       const paidRaw = 10n ** BigInt(quote.decimals) * BigInt(count);
       const funds = await publicClient.readContract({ address: quote.token, abi: erc20Abi, functionName: "balanceOf", args: [address] });
       if (funds < paidRaw) throw new Error(`Insufficient ${quote.symbol}. You need 1 ${quote.symbol} plus ${IS_TESTNET ? "testnet ETH" : "ETH"} for gas.`);
+      const refusal = await humanGateRefusal(pool, address, paidRaw);
+      if (refusal) throw new Error(refusal);
       const allowance = await publicClient.readContract({ address: quote.token, abi: erc20Abi, functionName: "allowance", args: [address, pool] });
       if (allowance < paidRaw) {
         setPhase("Approve the payment token in your wallet");

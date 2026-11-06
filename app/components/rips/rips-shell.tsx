@@ -6,9 +6,10 @@ import { AppChrome } from "../app-chrome";
 import { ConnectButton } from "../connect-button";
 import { useRipsState } from "@/lib/rips/use-rips";
 import { DEPLOYMENT } from "@/lib/deployment";
-import { RIPS_ONLY_APP, RIPS_SHOW_DEMO, RIPS_SHOW_EXTRAS } from "@/lib/rips/ui";
+import { RIPS_SHOW_DEMO, RIPS_SHOW_EXTRAS } from "@/lib/rips/ui";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { HumanCheck } from "./human-check";
 
 const Ctx = createContext<ReturnType<typeof useRipsState> | null>(null);
 export function useRips() { const v = useContext(Ctx); if (!v) throw new Error("useRips outside RipsShell"); return v; }
@@ -26,10 +27,11 @@ function State({ children }: { children: ReactNode }) {
         </ToggleGroup>}
       </nav>}
       {state.mode === "live" && state.buy.wrongNetwork && <div role="alert" className="mt-4 border border-danger p-4"><p className="mb-3 text-sm">Your wallet must use {DEPLOYMENT.chainName} before buying. Your holdings are read from that network.</p><ConnectButton /></div>}
+      {state.mode === "live" && <HumanCheck />}
       {state.mode === "live" && state.error && <div role="alert" className="mt-4 border border-danger p-4 text-sm">{state.error} <Button variant="link" className="text-text inline h-auto p-0 align-baseline font-normal underline underline-offset-auto" onClick={() => void state.refresh()}>Retry pool read</Button></div>}
       {children}
     </main>
-    <footer className="text-dim mx-auto max-w-3xl px-4 pb-8 text-center text-xs leading-5">{state.mode === "demo" ? "Demo pool: simulated prices and positions. Nothing is bought and no funds move." : `${RIPS_ONLY_APP ? "" : `${DEPLOYMENT.chainName} `}Rips buy fractional ERC-6909 upside (N) claims. They can expire worth nothing. No resale liquidity is guaranteed.`} <Link href="/#risk" className="underline">Risks</Link></footer>
+    {state.mode === "demo" && <footer className="text-dim mx-auto max-w-3xl px-4 pb-8 text-center text-xs">Demo pool: nothing is bought.</footer>}
   </Ctx.Provider>;
 }
 export function RipsShell({ children }: { children: ReactNode }) { return <State>{children}</State>; }

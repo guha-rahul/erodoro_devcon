@@ -1,12 +1,15 @@
 import { encodeAbiParameters, keccak256, decodeEventLog, type Address, type TransactionReceipt } from "viem";
 import { MarketRipPoolAbi } from "../abis/MarketRipPool";
 import { b20RevertMessage } from "../b20-errors";
+import { humanRevertMessage } from "./human-errors";
 
 export function purchaseError(cause: unknown): string {
   const text = cause instanceof Error ? cause.message : String(cause);
   if (/reject|denied|4001|cancelled/i.test(text)) return "Signing was cancelled. No new purchase was submitted. You can try again.";
   const b20 = b20RevertMessage(cause);
   if (b20) return b20;
+  const human = humanRevertMessage(cause);
+  if (human) return human;
   if (/SalesPaused/i.test(text)) return "Sales are paused for now. Nothing was charged. Your Rips are safe; try again later.";
   if (/OwnListing/i.test(text)) return "That is your own listing. Sellers cannot buy from themselves; choose another position.";
   if (/QuoteChanged/i.test(text)) return "The quote or inventory changed. Refresh the pool and review the new price before retrying.";
